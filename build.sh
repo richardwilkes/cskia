@@ -62,7 +62,6 @@ Darwin*)
   OS_TYPE=darwin
   SRC_LIB_NAME=${BUILD_DIR}/libskia.a
   DST_LIB_NAME=libskia_darwin.a
-  PYTHON_BIN=python2
   export MACOSX_DEPLOYMENT_TARGET=10.12
   PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
@@ -86,7 +85,6 @@ Linux*)
   OS_TYPE=linux
   SRC_LIB_NAME=${BUILD_DIR}/libskia.a
   DST_LIB_NAME=libskia_linux.a
-  PYTHON_BIN=python2
   PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=false \
