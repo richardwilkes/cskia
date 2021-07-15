@@ -6,8 +6,8 @@ set -eo pipefail
 DEPOT_TOOLS_COMMIT=a98084ce94230c828a03535a7fb2da1a1d04fe3b
 SKIA_COMMIT=97dba836328fe54df8d19e85c51226bcefd13674
 
-BUILD_DIR=$(PWD)/skia/build
-DIST=$(PWD)/dist
+BUILD_DIR=${PWD}/skia/build
+DIST=${PWD}/dist
 
 # As changes to Skia are made, these args may need to be adjusted.
 # Use 'bin/gn args $BUILD_DIR --list' to see what args are available.
@@ -19,6 +19,7 @@ COMMON_ARGS=" \
   skia_enable_fontmgr_android=false \
   skia_enable_fontmgr_empty=false \
   skia_enable_fontmgr_fuchsia=false \
+  skia_enable_fontmgr_win_gdi=false \
   skia_enable_gpu=true \
   skia_enable_particles=true \
   skia_enable_pdf=false \
@@ -65,8 +66,9 @@ Darwin*)
   export MACOSX_DEPLOYMENT_TARGET=10.12
   PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
-      skia_enable_fontmgr_win_gdi=false \
       skia_use_fonthost_mac=true \
+      skia_enable_fontmgr_fontconfig=false \
+      skia_use_fontconfig=false \
       skia_use_x11=false \
       extra_cflags=[ \
         \"-mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}\" \
@@ -82,6 +84,22 @@ Darwin*)
   ;;
 Linux*)
   OS_TYPE=linux
+  SRC_LIB_NAME=${BUILD_DIR}/libskia.a
+  DST_LIB_NAME=libskia_linux.a
+  PYTHON_BIN=python2
+  PLATFORM_ARGS=" \
+      skia_enable_fontmgr_win=false \
+      skia_use_fonthost_mac=false \
+      skia_enable_fontmgr_fontconfig=true \
+      skia_use_fontconfig=true \
+      skia_use_x11=true \
+      extra_cflags_cc=[ \
+        \"-DHAVE_XLOCALE_H\" \
+      ] \
+      extra_cflags_c=[ \
+        \"-DHAVE_ARC4RANDOM_BUF\", \
+      ] \
+    "
   ;;
 MINGW*)
   OS_TYPE=windows
@@ -92,8 +110,9 @@ MINGW*)
   PLATFORM_ARGS=" \
       is_component_build=true \
       skia_enable_fontmgr_win=true \
-      skia_enable_fontmgr_win_gdi=false \
       skia_use_fonthost_mac=false \
+      skia_enable_fontmgr_fontconfig=false \
+      skia_use_fontconfig=false \
       skia_use_x11=false \
       clang_win=\"C:\\Program Files\\LLVM\" \
       extra_cflags=[ \
@@ -134,6 +153,7 @@ if [ ! -e skia ]; then
   git clone https://skia.googlesource.com/skia.git
   cd skia
   git reset --hard ${SKIA_COMMIT}
+  echo 'script_executable = "vpython"' >> .gn
   ${PYTHON_BIN} tools/git-sync-deps
   cd ..
 fi
@@ -155,7 +175,7 @@ echo "int main() { return 0; }" >experimental/c-api-example/skia-c-example.c
 bin/gn gen $BUILD_DIR --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
 ninja -C $BUILD_DIR
 
-# Copy the result into $(DIST)
+# Copy the result into ${DIST}
 mkdir -p ${DIST}/include
 /bin/rm -f ${DIST}/include/*.h
 cp include/sk_capi.h ${DIST}/include/
