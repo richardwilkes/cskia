@@ -85,7 +85,7 @@ Linux*)
   ;;
 MINGW*)
   OS_TYPE=windows
-  SRC_LIB_NAME=${BUILD_DIR}/libskia.dll
+  SRC_LIB_NAME=${BUILD_DIR}/skia.dll
   DST_LIB_NAME=libskia.dll
   PYTHON_BIN=python
   export PATH="/c/python27:${PATH}"
