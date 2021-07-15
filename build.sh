@@ -161,3 +161,12 @@ mkdir -p ${DIST}/include
 cp include/sk_capi.h ${DIST}/include/
 mkdir -p ${DIST}/lib
 cp ${SRC_LIB_NAME} ${DIST}/lib/${DST_LIB_NAME}
+
+cd ../..
+
+# If present, also copy the results into the unison build tree
+if [ -d ../unison ]; then
+  cp ${DIST}/include/sk_capi.h ../unison/draw/include/
+  cp ${DIST}/lib/${DST_LIB_NAME} ../unison/draw/${DST_LIB_NAME}
+  echo "Copied distribution to unison"
+fi
