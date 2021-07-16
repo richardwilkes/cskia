@@ -102,8 +102,7 @@ COMMON_ARGS=" \
 case $(uname -s) in
 Darwin*)
   OS_TYPE=darwin
-  SRC_LIB_NAME=${BUILD_DIR}/libskia.a
-  DST_LIB_NAME=libskia_darwin.a
+  LIB_NAME=libskia.a
   export MACOSX_DEPLOYMENT_TARGET=10.12
   PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
@@ -126,8 +125,7 @@ Darwin*)
   ;;
 Linux*)
   OS_TYPE=linux
-  SRC_LIB_NAME=${BUILD_DIR}/libskia.a
-  DST_LIB_NAME=libskia_linux.a
+  LIB_NAME=libskia.a
   PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=false \
@@ -145,8 +143,7 @@ Linux*)
   ;;
 MINGW*)
   OS_TYPE=windows
-  SRC_LIB_NAME=${BUILD_DIR}/skia.dll
-  DST_LIB_NAME=libskia.dll
+  LIB_NAME=skia.dll
   PYTHON_BIN=python
   export PATH="/c/python27:${PATH}"
   PLATFORM_ARGS=" \
@@ -221,14 +218,16 @@ ninja -C $BUILD_DIR
 mkdir -p ${DIST}/include
 /bin/rm -f ${DIST}/include/*.h
 cp include/sk_capi.h ${DIST}/include/
-mkdir -p ${DIST}/lib
-cp ${SRC_LIB_NAME} ${DIST}/lib/${DST_LIB_NAME}
+mkdir -p ${DIST}/lib/${OS_TYPE}
+cp ${BUILD_DIR}/${LIB_NAME} ${DIST}/lib/${OS_TYPE}/
 
 cd ../..
 
 # If present, also copy the results into the unison build tree
 if [ -d ../unison ]; then
-  cp ${DIST}/include/sk_capi.h ../unison/draw/include/
-  cp ${DIST}/lib/${DST_LIB_NAME} ../unison/draw/${DST_LIB_NAME}
+  mkdir -p ../unison/lib/${OS_TYPE}
+  mkdir -p ../unison/include
+  cp ${DIST}/include/sk_capi.h ../unison/include/
+  cp ${DIST}/lib/${OS_TYPE}/${LIB_NAME} ../unison/lib/${OS_TYPE}/
   echo "Copied distribution to unison"
 fi
