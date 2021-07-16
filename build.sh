@@ -6,6 +6,49 @@ set -eo pipefail
 DEPOT_TOOLS_COMMIT=a98084ce94230c828a03535a7fb2da1a1d04fe3b
 SKIA_COMMIT=97dba836328fe54df8d19e85c51226bcefd13674
 
+for arg in "$@"
+do
+  case "$arg" in
+    --args|-a) SHOW_ARGS=1 ;;
+    --clean|-c) CLEAN=restore ;;
+    --CLEAN|-C) CLEAN=full ;;
+    --help|-h)
+      echo "$0 [options]"
+      echo "  -a, --args  Display the available args list for the skia build (no build)"
+      echo "  -c, --clean Remove the dist and skia/build directories (no build)"
+      echo "  -C, --CLEAN Remove the dist and skia directories (no build)"
+      echo "  -h, --help This help text"
+      exit 0
+      ;;
+    *)
+      echo "Invalid argument: $arg"
+      exit 1
+      ;;
+  esac
+done
+
+if [ "$CLEAN"x == "fullx" ]; then
+  /bin/rm -rf dist skia
+  exit 0
+fi
+
+if [ "$CLEAN"x == "restorex" ]; then
+  /bin/rm -rf dist skia/build
+  if [ -d skia/skia ]; then
+    cd skia/skia
+    git checkout -- .
+    rm include/sk_capi.h src/sk_capi.cpp
+  fi
+  exit 0
+fi
+
+if [ "$SHOW_ARGS"x == "1x" ]; then
+  export PATH="${PWD}/skia/depot_tools:${PATH}"
+  cd skia/skia
+  bin/gn args ../build --list --short
+  exit 0
+fi
+
 BUILD_DIR=${PWD}/skia/build
 DIST=${PWD}/dist
 
@@ -136,8 +179,7 @@ MINGW*)
   ;;
 esac
 
-# Setup the Skia tree, pulling sources, if needed. For a clean build, remove the top-level
-# skia directory prior to running ./build.sh
+# Setup the Skia tree, pulling sources, if needed.
 mkdir -p skia
 cd skia
 
