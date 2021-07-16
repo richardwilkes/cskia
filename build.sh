@@ -37,7 +37,6 @@ COMMON_ARGS=" \
   skia_use_ffmpeg=false \
   skia_use_fixed_gamma_text=false \
   skia_use_fontconfig=false \
-  skia_use_freetype=false \
   skia_use_gl=true \
   skia_use_harfbuzz=false \
   skia_use_icu=false \
@@ -68,6 +67,7 @@ Darwin*)
       skia_use_fonthost_mac=true \
       skia_enable_fontmgr_fontconfig=false \
       skia_use_fontconfig=false \
+      skia_use_freetype=false \
       skia_use_x11=false \
       extra_cflags=[ \
         \"-mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}\" \
@@ -90,6 +90,7 @@ Linux*)
       skia_use_fonthost_mac=false \
       skia_enable_fontmgr_fontconfig=true \
       skia_use_fontconfig=true \
+      skia_use_freetype=true \
       skia_use_x11=true \
       extra_cflags_cc=[ \
         \"-DHAVE_XLOCALE_H\" \
@@ -111,6 +112,7 @@ MINGW*)
       skia_use_fonthost_mac=false \
       skia_enable_fontmgr_fontconfig=false \
       skia_use_fontconfig=false \
+      skia_use_freetype=false \
       skia_use_x11=false \
       clang_win=\"C:\\Program Files\\LLVM\" \
       extra_cflags=[ \
