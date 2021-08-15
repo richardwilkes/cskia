@@ -192,7 +192,9 @@ if [ ! -e skia ]; then
   git clone https://skia.googlesource.com/skia.git
   cd skia
   git reset --hard ${SKIA_COMMIT}
-  echo 'script_executable = "vpython"' >> .gn
+  if [ "$OS_TYPE" != "windows" ]; then
+    echo 'script_executable = "vpython"' >> .gn
+  fi
   ${PYTHON_BIN} tools/git-sync-deps
   cd ..
 fi
