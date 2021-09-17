@@ -103,7 +103,8 @@ case $(uname -s) in
 Darwin*)
   OS_TYPE=darwin
   LIB_NAME=libskia.a
-  export MACOSX_DEPLOYMENT_TARGET=10.12
+  UNISON_LIB_NAME=libskia_darwin.a
+  export MACOSX_DEPLOYMENT_TARGET=10.13
   PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=true \
@@ -126,6 +127,7 @@ Darwin*)
 Linux*)
   OS_TYPE=linux
   LIB_NAME=libskia.a
+  UNISON_LIB_NAME=libskia_linux.a
   PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=false \
@@ -144,6 +146,7 @@ Linux*)
 MINGW*)
   OS_TYPE=windows
   LIB_NAME=skia.dll
+  UNISON_LIB_NAME=skia_windows.dll
   PYTHON_BIN=python
   export PATH="/c/python27:${PATH}"
   PLATFORM_ARGS=" \
@@ -227,9 +230,9 @@ cd ../..
 
 # If present, also copy the results into the unison build tree
 if [ -d ../unison ]; then
-  mkdir -p ../unison/lib/${OS_TYPE}
-  mkdir -p ../unison/include
-  cp ${DIST}/include/sk_capi.h ../unison/include/
-  cp ${DIST}/lib/${OS_TYPE}/${LIB_NAME} ../unison/lib/${OS_TYPE}/
+  RELATIVE_UNISON_DIR=../unison/internal/skia
+  mkdir -p ${RELATIVE_UNISON_DIR}
+  cp ${DIST}/include/sk_capi.h ${RELATIVE_UNISON_DIR}/
+  cp ${DIST}/lib/${OS_TYPE}/${LIB_NAME} ${RELATIVE_UNISON_DIR}/${UNISON_LIB_NAME}
   echo "Copied distribution to unison"
 fi
