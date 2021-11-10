@@ -209,7 +209,9 @@ cd skia
 /bin/rm -rf src/c include/c
 cp ../../capi/sk_capi.h include/
 cp ../../capi/sk_capi.cpp src/
-grep -v "/c/" gn/core.gni | grep -v "sk_capi.cpp" | sed -e 's@skia_core_sources = \[@&\n  "$_src/sk_capi.cpp",@' >gn/core.revised.gni
+
+grep -v "/c/" gn/core.gni | grep -v "sk_capi.cpp" | sed -e 's@skia_core_sources = \[@&\
+  "$_src/sk_capi.cpp",@' >gn/core.revised.gni
 mv gn/core.revised.gni gn/core.gni
 grep -v "/c/" gn/effects.gni >gn/effects.revised.gni
 mv gn/effects.revised.gni gn/effects.gni
