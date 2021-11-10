@@ -2,9 +2,9 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set July 13, 2021 @ 8:14pm PST
-DEPOT_TOOLS_COMMIT=a98084ce94230c828a03535a7fb2da1a1d04fe3b
-SKIA_COMMIT=97dba836328fe54df8d19e85c51226bcefd13674
+# Last set Wed Nov 10 21:38:56 2021 +0000
+DEPOT_TOOLS_COMMIT=4d3319e39c9b50747f47da35a351d428a38bcc82
+SKIA_COMMIT=6fae0523629f9abf114d8b7413f71dc7295a13e0
 
 for arg in "$@"
 do
@@ -209,7 +209,9 @@ cd skia
 /bin/rm -rf src/c include/c
 cp ../../capi/sk_capi.h include/
 cp ../../capi/sk_capi.cpp src/
-grep -v "/c/" gn/core.gni | grep -v "sk_capi.cpp" | sed -e 's@skia_core_sources = \[@&\n  "$_src/sk_capi.cpp",@' >gn/core.revised.gni
+
+grep -v "/c/" gn/core.gni | grep -v "sk_capi.cpp" | sed -e 's@skia_core_sources = \[@&\
+  "$_src/sk_capi.cpp",@' >gn/core.revised.gni
 mv gn/core.revised.gni gn/core.gni
 grep -v "/c/" gn/effects.gni >gn/effects.revised.gni
 mv gn/effects.revised.gni gn/effects.gni
