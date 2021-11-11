@@ -66,11 +66,14 @@ int main(int argc, char** argv) {
 
     while (!glfwWindowShouldClose(window)) {
         float contentScaleX, contentScaleY;
+        double canvasWidth, canvasHeight;
         glfwGetWindowSize(window, &width, &height);
         glfwGetWindowContentScale(window, &contentScaleX, &contentScaleY);
+        canvasWidth = width * contentScaleX;
+        canvasHeight = height * contentScaleY;
 
         // Surface is cheap(ish?) to create src: https://groups.google.com/g/skia-discuss/c/3c10MvyaSug
-        sk_surface_t* surface = initSkia(width * contentScaleX, height * contentScaleY);
+        sk_surface_t* surface = initSkia(canvasWidth, canvasHeight);
         sk_canvas_t* canvas = sk_surface_get_canvas(surface);
 
         sk_paint_t* paint = sk_paint_new();
@@ -84,8 +87,10 @@ int main(int argc, char** argv) {
 
         sk_paint_set_color(paint, 0xFFFF0000);
         sk_paint_set_stroke_width(paint, 1);
-        sk_canvas_draw_line(canvas, 0, 0, width * 0.9, height * 0.9, paint);
-        sk_canvas_draw_line(canvas, 0, height * 0.9, width * 0.9, height * 0.9, paint);
+        sk_canvas_draw_line(canvas, 0, 0, canvasWidth, canvasHeight, paint);
+        sk_canvas_draw_line(canvas, 0, canvasHeight * 0.9, canvasWidth, canvasHeight * 0.9, paint);
+        sk_canvas_draw_line(canvas, 0, 200, canvasWidth, 200, paint);
+        sk_canvas_draw_line(canvas, 200, 0, 200, canvasHeight, paint);
 
         sk_canvas_flush(canvas);
 
