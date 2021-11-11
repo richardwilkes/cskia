@@ -5,7 +5,6 @@
 #include "include/core/SkColorSpace.h"
 #include "include/core/SkData.h"
 #include "include/core/SkEncodedImageFormat.h"
-#include "include/core/SkFilterQuality.h"
 #include "include/core/SkFontMetrics.h"
 #include "include/core/SkFontMgr.h"
 #include "include/core/SkPoint3.h"
@@ -147,10 +146,11 @@ static_assert((int)SkColorType::kR16G16_unorm_SkColorType       == (int)SK_COLOR
 static_assert((int)SkColorType::kA16_float_SkColorType          == (int)SK_COLOR_TYPE_A16_FLOAT,          ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR16G16_float_SkColorType       == (int)SK_COLOR_TYPE_R16G16_FLOAT,       ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR16G16B16A16_unorm_SkColorType == (int)SK_COLOR_TYPE_R16G16B16A16_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kSRGBA_8888_SkColorType          == (int)SK_COLOR_TYPE_SRGBA_8888,        ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kLastEnum_SkColorType           == (int)SK_COLOR_TYPE_LAST,               ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 
 // sk_encoded_image_format_t
-static_assert((int)SkEncodedImageFormat::kBMP  == (int)SK_ENCODED_FORMAT_BMP,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
+static_assert((int)SkEncodedImageFormat::kBMP == (int)SK_ENCODED_FORMAT_BMP, ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
 static_assert((int)SkEncodedImageFormat::kGIF  == (int)SK_ENCODED_FORMAT_GIF,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
 static_assert((int)SkEncodedImageFormat::kICO  == (int)SK_ENCODED_FORMAT_ICO,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
 static_assert((int)SkEncodedImageFormat::kJPEG == (int)SK_ENCODED_FORMAT_JPEG, ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
@@ -167,13 +167,6 @@ static_assert((int)SkEncodedImageFormat::kHEIF == (int)SK_ENCODED_FORMAT_HEIF, A
 static_assert((int)SkFilterMode::kNearest == (int)SK_FILTER_MODE_NEAREST, ASSERT_ENUM_MSG(SkFilterMode, sk_filter_mode_t));
 static_assert((int)SkFilterMode::kLinear  == (int)SK_FILTER_MODE_LINEAR,  ASSERT_ENUM_MSG(SkFilterMode, sk_filter_mode_t));
 static_assert((int)SkFilterMode::kLast    == (int)SK_FILTER_MODE_LAST,    ASSERT_ENUM_MSG(SkFilterMode, sk_filter_mode_t));
-
-// sk_filter_quality_t
-static_assert((int)SkFilterQuality::kNone_SkFilterQuality   == (int)SK_FILTER_QUALITY_NONE,   ASSERT_ENUM_MSG(SkFilterQuality, sk_filter_quality_t));
-static_assert((int)SkFilterQuality::kLow_SkFilterQuality    == (int)SK_FILTER_QUALITY_LOW,    ASSERT_ENUM_MSG(SkFilterQuality, sk_filter_quality_t));
-static_assert((int)SkFilterQuality::kMedium_SkFilterQuality == (int)SK_FILTER_QUALITY_MEDIUM, ASSERT_ENUM_MSG(SkFilterQuality, sk_filter_quality_t));
-static_assert((int)SkFilterQuality::kHigh_SkFilterQuality   == (int)SK_FILTER_QUALITY_HIGH,   ASSERT_ENUM_MSG(SkFilterQuality, sk_filter_quality_t));
-static_assert((int)SkFilterQuality::kLast_SkFilterQuality   == (int)SK_FILTER_QUALITY_LAST,   ASSERT_ENUM_MSG(SkFilterQuality, sk_filter_quality_t));
 
 // sk_font_hinting_t
 static_assert((int)SkFontHinting::kNone   == (int)SK_FONT_HINTING_NONE,   ASSERT_ENUM_MSG(SkFontHinting, sk_font_hinting_t));
