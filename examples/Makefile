@@ -1,20 +1,24 @@
+CSKIA_DIST = ../dist
 SRC = $(wildcard *.c)
 OBJ = ${SRC:.c=.o}
 CC = clang
 
 OUT = hello_world
 
+CSKIA_HEADER=-I$(CSKIA_DIST)/include
+CFLAGS= -Wall -std=c99 -pedantic $(CSKIA_HEADER)
+
+CSKIA_LIB=-L$(CSKIA_DIST)/lib/darwin -lskia -lc++
 GLFW_LIB=`pkg-config --libs glfw3 --static`
 LIBS=-framework OpenGL 
-LDFLAGS=$(GLFW_LIB) $(LIBS)
-CFLAGS= -Wall -std=c99 -pedantic
+LDFLAGS=$(CSKIA_LIB) $(GLFW_LIB) $(LIBS)
 
 .PHONY: all run
 
 all: $(OUT) run
 
 $(OUT): $(OBJ)
-	@$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	$(CC) $^ -o $@ $(LDFLAGS)
 	@printf "\e[33mLinking\e[90m %s\e[0m\n" $@
 	@printf "\e[34mDone!\e[0m\n"
 
@@ -22,7 +26,7 @@ run: $(OUT)
 	./$(OUT)	
 
 %.o: %.c
-	@$(CC) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 	@printf "\e[36mCompile\e[90m %s\e[0m\n" $@
 
 clean:
