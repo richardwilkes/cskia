@@ -42,14 +42,15 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //(uncomment to enable correct color spaces) glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
-    glfwWindowHint(GLFW_STENCIL_BITS, 0);
-    // glfwWindowHint(GLFW_ALPHA_BITS, 0);
-    glfwWindowHint(GLFW_DEPTH_BITS, 0);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // //(uncomment to enable correct color spaces) glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
+    // glfwWindowHint(GLFW_STENCIL_BITS, 0);
+    // // glfwWindowHint(GLFW_ALPHA_BITS, 0);
+    // glfwWindowHint(GLFW_DEPTH_BITS, 0);
+    // // glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
 
     window = glfwCreateWindow(width, height, "Hello Skia World", NULL, NULL);
     if (!window) {
@@ -60,22 +61,32 @@ int main(int argc, char** argv) {
 
     glfwMakeContextCurrent(window);
 
-    sk_surface_t* surface = initSkia(width, height);
-    sk_canvas_t* canvas = sk_surface_get_canvas(surface);
-
-    assert(canvas != NULL);
     glfwSwapInterval(1);
     // glfwSetKeyCallback(window, key_callback);
 
     while (!glfwWindowShouldClose(window)) {
+        float contentScaleX, contentScaleY;
+        glfwGetWindowSize(window, &width, &height);
+        glfwGetWindowContentScale(window, &contentScaleX, &contentScaleY);
+
+        // Surface is cheap(ish?) to create src: https://groups.google.com/g/skia-discuss/c/3c10MvyaSug
+        sk_surface_t* surface = initSkia(width * contentScaleX, height * contentScaleY);
+        sk_canvas_t* canvas = sk_surface_get_canvas(surface);
+
         sk_paint_t* paint = sk_paint_new();
 
-        sk_paint_set_color(paint, 0xFF80AA80);
+        sk_paint_set_color(paint, 0xFF808080);
         sk_canvas_draw_paint(canvas, paint);
 
-        sk_paint_set_color(paint, 0xFFAA0080);
-        sk_rect_t rect = {.left = 100, .top = 100, .right = 200, .bottom = 200};
+        sk_paint_set_color(paint, 0x8FAA0080);
+        sk_rect_t rect = {.left = 0, .top = 0, .right = 200, .bottom = 200};
         sk_canvas_draw_rect(canvas, &rect, paint);
+
+        sk_paint_set_color(paint, 0xFFFF0000);
+        sk_paint_set_stroke_width(paint, 1);
+        sk_canvas_draw_line(canvas, 0, 0, width * 0.9, height * 0.9, paint);
+        sk_canvas_draw_line(canvas, 0, height * 0.9, width * 0.9, height * 0.9, paint);
+
         sk_canvas_flush(canvas);
 
         glfwSwapBuffers(window);
