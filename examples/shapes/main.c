@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
         // glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
     */
 
-    GLFWwindow* window = glfwCreateWindow(width, height, "Hello Skia World", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(width, height, "Shapes", NULL, NULL);
     if (!window) {
         fprintf(stderr, "Failed to open GLFW window\n");
         glfwTerminate();

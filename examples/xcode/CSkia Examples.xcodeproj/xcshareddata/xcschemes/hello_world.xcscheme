@@ -17,7 +17,7 @@
                BlueprintIdentifier = "652ADA7A273D88EC0009E305"
                BuildableName = "hello_world"
                BlueprintName = "hello_world"
-               ReferencedContainer = "container:CSkia.xcodeproj">
+               ReferencedContainer = "container:CSkia Examples.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "652ADA7A273D88EC0009E305"
             BuildableName = "hello_world"
             BlueprintName = "hello_world"
-            ReferencedContainer = "container:CSkia.xcodeproj">
+            ReferencedContainer = "container:CSkia Examples.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -81,7 +81,7 @@
             BlueprintIdentifier = "652ADA7A273D88EC0009E305"
             BuildableName = "hello_world"
             BlueprintName = "hello_world"
-            ReferencedContainer = "container:CSkia.xcodeproj">
+            ReferencedContainer = "container:CSkia Examples.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

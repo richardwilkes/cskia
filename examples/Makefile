@@ -1,44 +1,37 @@
+EXAMPLES := $(shell  ls -d */ | sed -e 's^/^^' -e'/xcode/d')
 CSKIA_DIST := ../dist
-CC := clang
-SRC = $(wildcard *.c)
-OBJ = ${SRC:.c=.o}
-
-OUT = hello_world
 
 UNAME := $(shell uname -s)
 ifeq ($(UNAME), Darwin)	# Mac OS X
-	CSKIA_LIB=-L$(CSKIA_DIST)/lib/darwin
-	LIBS=-framework OpenGL 
+	CC := clang
+	CSKIA_LIB:=-L$(CSKIA_DIST)/lib/darwin
+	LIBS:=-framework OpenGL
+	GLFW_LIB:=`pkg-config --libs glfw3 --static`
 else
 $(error Unsupported OS: >$(UNAME)<)	
 endif
 
-CSKIA_HEADER=-I$(CSKIA_DIST)/include
-CFLAGS= -Wall -std=c99 -pedantic $(CSKIA_HEADER)
+SRC = $(wildcard */*.c)
+OBJ = ${SRC:.c=.o}
+OUT = $(foreach e, $(EXAMPLES), $(addprefix $(e)/,$(e)) )
 
-GLFW_LIB=`pkg-config --libs glfw3 --static`
-SKIA_LIB=-lskia -lc++
-LDFLAGS=$(CSKIA_LIB) $(SKIA_LIB) $(GLFW_LIB) $(LIBS)
+CSKIA_HEADER:=-I$(CSKIA_DIST)/include
+CFLAGS:= -Wall -std=c99 -pedantic $(CSKIA_HEADER)
+
+SKIA_LIB:=-lskia -lc++
+LDFLAGS:=$(CSKIA_LIB) $(SKIA_LIB) $(GLFW_LIB) $(LIBS)
 
 .PHONY: all run
 
-all: $(OUT) run
-
-$(CSKIA_DIST):
-	@printf "\e[31mError: folder >$(CSKIA_DIST)< does not exist, build CSkia first...\e[0m\n"
-	exit 1
-
-$(OUT): $(OBJ)
-	$(CC) $^ -o $@ $(LDFLAGS)
-	@printf "\e[33mLinking\e[90m %s\e[0m\n" $@
-	@printf "\e[34mDone!\e[0m\n"
-
-run: $(OUT)
-	./$(OUT)	
+all: $(OUT)
 
 %.o: %.c
+	@printf "\e[36mCompiling\e[90m %s\e[0m\n" $@
 	@$(CC) $(CFLAGS) -c $< -o $@
-	@printf "\e[36mCompile\e[90m %s\e[0m\n" $@
+
+$(OUT): $(OBJ) 
+	@printf "\e[33mLinking\e[90m %s\e[0m\n" $@
+	@$(CC) $(filter $(dir $@)%,$^) -o $@ $(LDFLAGS)
 
 clean:
 	@rm -f $(OUT) $(OBJ)
