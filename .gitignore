@@ -2,3 +2,5 @@
 /dist
 /examples/hello_world
 /.vscode
+/examples/shapes/shapes
+/examples/skcanvas_paint/skcanvas_paint
