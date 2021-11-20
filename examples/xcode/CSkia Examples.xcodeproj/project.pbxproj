@@ -18,6 +18,11 @@
 		652ADB7A2740506E0009E305 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA98273D8C490009E305 /* CoreFoundation.framework */; };
 		652ADB7B274050760009E305 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADAA0273D908E0009E305 /* OpenGL.framework */; };
 		652ADB7C2740507C0009E305 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA96273D8C410009E305 /* IOKit.framework */; };
+		653B806227494A05007D158D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 653B806127494A05007D158D /* main.c */; };
+		653B806C27494C58007D158D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA98273D8C490009E305 /* CoreFoundation.framework */; };
+		653B806D27494C6A007D158D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADAA0273D908E0009E305 /* OpenGL.framework */; };
+		653B807127494C77007D158D /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA96273D8C410009E305 /* IOKit.framework */; };
+		653B808D27494CD9007D158D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA92273D8BB70009E305 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,6 +44,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		653B804B27494976007D158D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +66,10 @@
 		652ADB3227404DEC0009E305 /* foo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = foo.h; sourceTree = "<group>"; };
 		652ADB4127404E2C0009E305 /* shapes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = shapes; sourceTree = BUILT_PRODUCTS_DIR; };
 		652ADB5227404E450009E305 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		653B804D27494976007D158D /* skcanvas_paint */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = skcanvas_paint; sourceTree = BUILT_PRODUCTS_DIR; };
+		653B806127494A05007D158D /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		653B807527494C91007D158D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		653B807A27494CA1007D158D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,12 +95,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		653B804A27494976007D158D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				653B808D27494CD9007D158D /* Cocoa.framework in Frameworks */,
+				653B806C27494C58007D158D /* CoreFoundation.framework in Frameworks */,
+				653B806D27494C6A007D158D /* OpenGL.framework in Frameworks */,
+				653B807127494C77007D158D /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		652ADA61273D887E0009E305 = {
 			isa = PBXGroup;
 			children = (
+				653B804827494959007D158D /* skcanvas_paint */,
 				652ADB2A27404DEB0009E305 /* hello_world */,
 				652ADB4C27404E450009E305 /* shapes */,
 				652ADA6B273D887E0009E305 /* Products */,
@@ -95,6 +125,7 @@
 			children = (
 				652ADA7B273D88EC0009E305 /* hello_world */,
 				652ADB4127404E2C0009E305 /* shapes */,
+				653B804D27494976007D158D /* skcanvas_paint */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -102,6 +133,8 @@
 		652ADA91273D8BB70009E305 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				653B807A27494CA1007D158D /* Foundation.framework */,
+				653B807527494C91007D158D /* AppKit.framework */,
 				652ADAA0273D908E0009E305 /* OpenGL.framework */,
 				652ADA98273D8C490009E305 /* CoreFoundation.framework */,
 				652ADA96273D8C410009E305 /* IOKit.framework */,
@@ -128,6 +161,15 @@
 			);
 			name = shapes;
 			path = ../shapes;
+			sourceTree = "<group>";
+		};
+		653B804827494959007D158D /* skcanvas_paint */ = {
+			isa = PBXGroup;
+			children = (
+				653B806127494A05007D158D /* main.c */,
+			);
+			name = skcanvas_paint;
+			path = ../skcanvas_paint;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,6 +209,23 @@
 			productReference = 652ADB4127404E2C0009E305 /* shapes */;
 			productType = "com.apple.product-type.tool";
 		};
+		653B804C27494976007D158D /* skcanvas_paint */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 653B805127494976007D158D /* Build configuration list for PBXNativeTarget "skcanvas_paint" */;
+			buildPhases = (
+				653B804927494976007D158D /* Sources */,
+				653B804A27494976007D158D /* Frameworks */,
+				653B804B27494976007D158D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = skcanvas_paint;
+			productName = skcanvas_paint;
+			productReference = 653B804D27494976007D158D /* skcanvas_paint */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -179,6 +238,9 @@
 						CreatedOnToolsVersion = 12.4;
 					};
 					652ADB4027404E2C0009E305 = {
+						CreatedOnToolsVersion = 12.4;
+					};
+					653B804C27494976007D158D = {
 						CreatedOnToolsVersion = 12.4;
 					};
 				};
@@ -198,6 +260,7 @@
 			targets = (
 				652ADA7A273D88EC0009E305 /* hello_world */,
 				652ADB4027404E2C0009E305 /* shapes */,
+				653B804C27494976007D158D /* skcanvas_paint */,
 			);
 		};
 /* End PBXProject section */
@@ -217,6 +280,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				652ADB5727404E450009E305 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		653B804927494976007D158D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				653B806227494A05007D158D /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,7 +476,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -418,7 +489,33 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		653B805227494976007D158D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		653B805327494976007D158D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -449,6 +546,15 @@
 			buildConfigurations = (
 				652ADB4627404E2C0009E305 /* Debug */,
 				652ADB4727404E2C0009E305 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		653B805127494976007D158D /* Build configuration list for PBXNativeTarget "skcanvas_paint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				653B805227494976007D158D /* Debug */,
+				653B805327494976007D158D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
