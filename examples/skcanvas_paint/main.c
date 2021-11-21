@@ -2,7 +2,7 @@
 //  main.c
 //
 //  Created by Daniel Owsiański on 20/11/2021.
-//   
+//
 
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
@@ -17,7 +17,13 @@
 #include <stdlib.h>  // EXIT_SUCCESS, EXIT_FAILURE
 #include <string.h>  // strlen
 
+#include <unistd.h>  // getcwd
+#include <limits.h>  // PATH_MAX
+
+
 #include "sk_capi.h"
+
+const sk_image_t *image = NULL;
 
 // https://fiddle.skia.org/c/@skcanvas_paint
 void draw(sk_canvas_t* canvas) {
@@ -41,12 +47,12 @@ void draw(sk_canvas_t* canvas) {
 
     /*
      TODO:
-    //    SkRRect oval;
-    //    oval.setOval(rect);
-    //    oval.offset(40, 60);
-    //    paint.setColor(SK_ColorBLUE);
-    //    canvas->drawRRect(oval, paint);
-    */
+     //    SkRRect oval;
+     //    oval.setOval(rect);
+     //    oval.offset(40, 60);
+     //    paint.setColor(SK_ColorBLUE);
+     //    canvas->drawRRect(oval, paint);
+     */
 
     // paint.setColor(SK_ColorCYAN);
     // canvas->drawCircle(180, 50, 25, paint);
@@ -70,16 +76,25 @@ void draw(sk_canvas_t* canvas) {
     sk_canvas_draw_path(canvas, path, paint);
     sk_path_delete(path);
 
-    /*
-     TODO:
     // canvas->drawImage(image, 128, 128, SkSamplingOptions(), &paint);
-    */
+    float imageW, imageH;
+    imageW = sk_image_get_width(image);
+    imageH = sk_image_get_height(image);
 
-    /*
-     TODO:
+    sk_rect_t srcRect = {.left=0, .top=0, .right=imageW, .bottom=imageH};
+    sk_rect_t dstRect = {.left=128, .top=128, .right=128+imageW, .bottom=128+imageH};
+    sk_sampling_options_t samplingOpts = {
+        .useCubic = true,
+        .cubic = {.B=1/3.0, .C=1/3.0}, // Mitchell
+        .filter = SK_FILTER_MODE_NEAREST,
+        .mipmap = SK_MIPMAP_MODE_NONE
+    };
+    sk_canvas_draw_image_rect(canvas, image, &srcRect, &dstRect, &samplingOpts, paint, SRC_RECT_CONSTRAINT_FAST);
+
     // SkRect rect2 = SkRect::MakeXYWH(0, 0, 40, 60);
     // canvas->drawImageRect(image, rect2, SkSamplingOptions(), &paint);
-    */
+    sk_rect_t squeezedDstRect = {.left=0, .top=0, .right=40, .bottom=60};
+    sk_canvas_draw_image_rect(canvas, image, &srcRect, &squeezedDstRect, &samplingOpts, paint, SRC_RECT_CONSTRAINT_FAST);
 
     // SkPaint paint2;
     // auto text = SkTextBlob::MakeFromString("Hello, Skia!", SkFont(nullptr, 18));
@@ -98,6 +113,7 @@ void draw(sk_canvas_t* canvas) {
 
 static gr_direct_context_t* makeSkiaContext(void);
 static sk_surface_t* newSurface(gr_direct_context_t* context, const int w, const int h);
+static const sk_image_t* loadImage(const char* imageFile);
 
 int main(int argc, char** argv) {
     int width = 256;
@@ -108,6 +124,7 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
+    image = loadImage("color_wheel.png");
 
     GLFWwindow* window = glfwCreateWindow(width, height, "Canvas Paint", NULL, NULL);
     if (!window) {
@@ -174,4 +191,59 @@ static sk_surface_t* newSurface(gr_direct_context_t* context, const int w, const
     gr_backendrendertarget_delete(target);
     assert(surface != NULL);
     return surface;
+}
+
+
+static const sk_image_t* loadImage(const char* imageFile){
+    char imagePath[PATH_MAX];
+    int imageFileLen = (int)strlen(imageFile);
+    // Leave space in imagePath for '/' + imageFile + '\0'
+    int cwdBufferSize = sizeof(imagePath) - (1 + imageFileLen + 1);
+    if (cwdBufferSize>0 && getcwd(imagePath, cwdBufferSize) == NULL) {
+        fprintf(stderr, "Failed to get the current working dir\n");
+        exit(EXIT_FAILURE);
+    }
+    strncat(imagePath, "/", 1);
+    strncat(imagePath, imageFile, imageFileLen);
+
+
+    FILE *file = fopen(imageFile,"rb");
+    if (file == NULL) {
+        fprintf(stderr, "Could not open file \"%s\".\n", imagePath);
+        exit(74);
+    }
+
+    fseek(file, 0L, SEEK_END);
+    size_t fileSize = ftell(file);
+    rewind(file);
+
+    char* buffer = (char*)malloc(fileSize);
+    if (buffer == NULL) {
+        fprintf(stderr, "Not enough memory to read \"%s\".\n", imagePath);
+        exit(74);
+    }
+
+    size_t bytesRead = fread(buffer, sizeof(char), fileSize, file);
+    if (bytesRead < fileSize) {
+        fprintf(stderr, "Could not read file \"%s\".\n", imagePath);
+        exit(74);
+    }
+
+    sk_data_t *data = sk_data_new_with_copy(buffer, bytesRead);
+    if (data == NULL) {
+        fprintf(stderr, "Could not create data from file \"%s\".\n", imagePath);
+        exit(74);
+    }
+
+    sk_image_t *image = sk_image_new_from_encoded(data);
+    if (image == NULL) {
+        fprintf(stderr, "Could not create image from file \"%s\".\n", imagePath);
+        exit(74);
+    }
+
+    sk_data_unref(data);
+    free((void *)buffer);
+    fclose(file);
+
+    return image;
 }
