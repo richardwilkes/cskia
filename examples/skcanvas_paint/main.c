@@ -18,7 +18,12 @@
 #include <string.h>  // strlen
 
 #include <unistd.h>  // getcwd
+
+#ifdef __APPLE__
 #include <limits.h>  // PATH_MAX
+#else
+#include <linux/limits.h>
+#endif
 
 #include "sk_capi.h"
 
@@ -198,8 +203,8 @@ static const sk_image_t* loadImage(const char* imageFile) {
         fprintf(stderr, "Failed to get the current working dir\n");
         exit(EXIT_FAILURE);
     }
-    strncat(imagePath, "/", 1);
-    strncat(imagePath, imageFile, imageFileLen);
+    strncat(imagePath, "/", sizeof(imagePath) - 2);
+    strncat(imagePath, imageFile, sizeof(imagePath) - imageFileLen - 1);
 
     FILE* file = fopen(imageFile, "rb");
     if (file == NULL) {

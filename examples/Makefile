@@ -7,6 +7,11 @@ ifeq ($(UNAME), Darwin)	# Mac OS X
 	CSKIA_LIB:=-L$(CSKIA_DIST)/lib/darwin
 	LIBS:=-framework OpenGL
 	GLFW_LIB:=`pkg-config --libs glfw3 --static`
+else ifeq ($(UNAME), Linux)	# Linux
+	CC := gcc
+	CSKIA_LIB:=-L$(CSKIA_DIST)/lib/linux
+	LIBS:=-lGL -lpthread -lstdc++ -lfreetype  -lfontconfig
+	GLFW_LIB:=`pkg-config --libs glfw3 --static`
 else
 $(error Unsupported OS: >$(UNAME)<)	
 endif
@@ -36,3 +41,4 @@ $(OUT): $(OBJ)
 clean:
 	@rm -f $(OUT) $(OBJ)
 	@printf "\e[34mAll clear!\e[0m\n"
+
