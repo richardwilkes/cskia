@@ -19,15 +19,15 @@ The Skia version with which these bindings have been tested is from _Wed Nov 10 
 
 ### Hello World
 
-<img src="./examples/hello_world/screen.png" width="256" />
+<kbd><img src="./examples/hello_world/screen.png" width="256" /></kbd>
 
 ### SkCanvas Paint
 
 Copy of this Skia fiddle: https://fiddle.skia.org/c/@skcanvas_paint
 
-<img src="./examples/skcanvas_paint/screen.png" width="256" />
+<kbd><img src="./examples/skcanvas_paint/screen.png" width="256" /></kbd>
 
 
 ### Rects
 
-<img src="./examples/rects/screen.gif" width="256" />
+<kbd><img src="./examples/rects/screen.gif" width="256" /></kbd>
