@@ -13,3 +13,20 @@ The Skia version with which these bindings have been tested is from _Wed Nov 10 
 ### November 10, 2021
 
 * SkFilterQuality is gone. https://skia.googlesource.com/skia/+/aebe248575affab2137f3d3fb9f94b8e397c4986
+
+
+## Examples
+
+### Hello World
+
+![Hello World](./examples/hello_world/screen.png)
+
+### SkCanvas Paint
+
+Copy of this Skia fiddle: https://fiddle.skia.org/c/@skcanvas_paint
+
+![SkCanvas Paint](./examples/skcanvas_paint/screen.png)
+
+### Rects
+
+![SkCanvas Paint](./examples/rects/screen.gif)
