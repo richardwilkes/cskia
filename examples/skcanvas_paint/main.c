@@ -117,8 +117,8 @@ static sk_surface_t* newSurface(gr_direct_context_t* context, const int w, const
 static const sk_image_t* loadImage(const char* imageFile);
 
 int main(int argc, char** argv) {
-    int width = 256;
-    int height = 256;
+    int width = 512;
+    int height = 512;
 
     if (!glfwInit()) {
         fprintf(stderr, "Failed to initialize GLFW\n");
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
         sk_surface_t* surface = newSurface(context, canvasWidth, canvasHeight);
         sk_canvas_t* canvas = sk_surface_get_canvas(surface);
 
-        sk_canvas_scale(canvas, contentScaleX, contentScaleY);
+        sk_canvas_scale(canvas, contentScaleX * 2, contentScaleY * 2);
         draw(canvas);
 
         sk_canvas_flush(canvas);
