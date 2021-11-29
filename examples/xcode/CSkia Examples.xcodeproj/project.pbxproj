@@ -7,17 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		65232BFA275152C900C0144B /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 65232BF9275152C900C0144B /* main.c */; };
+		65232C0F2751531D00C0144B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA92273D8BB70009E305 /* Cocoa.framework */; };
+		65232C102751532500C0144B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA96273D8C410009E305 /* IOKit.framework */; };
+		65232C112751532A00C0144B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADAA0273D908E0009E305 /* OpenGL.framework */; };
 		652ADA93273D8BB70009E305 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA92273D8BB70009E305 /* Cocoa.framework */; };
 		652ADA97273D8C410009E305 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA96273D8C410009E305 /* IOKit.framework */; };
 		652ADA99273D8C490009E305 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA98273D8C490009E305 /* CoreFoundation.framework */; };
 		652ADAA1273D908E0009E305 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADAA0273D908E0009E305 /* OpenGL.framework */; };
-		652ADB3727404DEC0009E305 /* foo.c in Sources */ = {isa = PBXBuildFile; fileRef = 652ADB3027404DEC0009E305 /* foo.c */; };
 		652ADB3827404DEC0009E305 /* hello_world.c in Sources */ = {isa = PBXBuildFile; fileRef = 652ADB3127404DEC0009E305 /* hello_world.c */; };
-		652ADB5727404E450009E305 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 652ADB5227404E450009E305 /* main.c */; };
-		652ADB79274050680009E305 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA92273D8BB70009E305 /* Cocoa.framework */; };
-		652ADB7A2740506E0009E305 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA98273D8C490009E305 /* CoreFoundation.framework */; };
-		652ADB7B274050760009E305 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADAA0273D908E0009E305 /* OpenGL.framework */; };
-		652ADB7C2740507C0009E305 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA96273D8C410009E305 /* IOKit.framework */; };
 		653B806227494A05007D158D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 653B806127494A05007D158D /* main.c */; };
 		653B806C27494C58007D158D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADA98273D8C490009E305 /* CoreFoundation.framework */; };
 		653B806D27494C6A007D158D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652ADAA0273D908E0009E305 /* OpenGL.framework */; };
@@ -26,7 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		652ADA79273D88EC0009E305 /* CopyFiles */ = {
+		65232BEC2751529200C0144B /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -35,7 +33,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
-		652ADB3F27404E2C0009E305 /* CopyFiles */ = {
+		652ADA79273D88EC0009E305 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -56,16 +54,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		65232BEE2751529200C0144B /* rects */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = rects; sourceTree = BUILT_PRODUCTS_DIR; };
+		65232BF9275152C900C0144B /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		652ADA7B273D88EC0009E305 /* hello_world */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hello_world; sourceTree = BUILT_PRODUCTS_DIR; };
 		652ADA92273D8BB70009E305 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		652ADA96273D8C410009E305 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		652ADA98273D8C490009E305 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		652ADAA0273D908E0009E305 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		652ADB3027404DEC0009E305 /* foo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = foo.c; sourceTree = "<group>"; };
 		652ADB3127404DEC0009E305 /* hello_world.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hello_world.c; sourceTree = "<group>"; };
-		652ADB3227404DEC0009E305 /* foo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = foo.h; sourceTree = "<group>"; };
-		652ADB4127404E2C0009E305 /* shapes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = shapes; sourceTree = BUILT_PRODUCTS_DIR; };
-		652ADB5227404E450009E305 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		653B804D27494976007D158D /* skcanvas_paint */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = skcanvas_paint; sourceTree = BUILT_PRODUCTS_DIR; };
 		653B806127494A05007D158D /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		653B807527494C91007D158D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -73,6 +69,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		65232BEB2751529200C0144B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65232C0F2751531D00C0144B /* Cocoa.framework in Frameworks */,
+				65232C102751532500C0144B /* IOKit.framework in Frameworks */,
+				65232C112751532A00C0144B /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		652ADA78273D88EC0009E305 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -81,17 +87,6 @@
 				652ADAA1273D908E0009E305 /* OpenGL.framework in Frameworks */,
 				652ADA97273D8C410009E305 /* IOKit.framework in Frameworks */,
 				652ADA99273D8C490009E305 /* CoreFoundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		652ADB3E27404E2C0009E305 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				652ADB7A2740506E0009E305 /* CoreFoundation.framework in Frameworks */,
-				652ADB79274050680009E305 /* Cocoa.framework in Frameworks */,
-				652ADB7B274050760009E305 /* OpenGL.framework in Frameworks */,
-				652ADB7C2740507C0009E305 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,12 +104,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		65232BEF2751529300C0144B /* rects */ = {
+			isa = PBXGroup;
+			children = (
+				65232BF9275152C900C0144B /* main.c */,
+			);
+			name = rects;
+			path = ../rects;
+			sourceTree = "<group>";
+		};
 		652ADA61273D887E0009E305 = {
 			isa = PBXGroup;
 			children = (
-				653B804827494959007D158D /* skcanvas_paint */,
 				652ADB2A27404DEB0009E305 /* hello_world */,
-				652ADB4C27404E450009E305 /* shapes */,
+				653B804827494959007D158D /* skcanvas_paint */,
+				65232BEF2751529300C0144B /* rects */,
 				652ADA6B273D887E0009E305 /* Products */,
 				652ADA91273D8BB70009E305 /* Frameworks */,
 			);
@@ -124,8 +128,8 @@
 			isa = PBXGroup;
 			children = (
 				652ADA7B273D88EC0009E305 /* hello_world */,
-				652ADB4127404E2C0009E305 /* shapes */,
 				653B804D27494976007D158D /* skcanvas_paint */,
+				65232BEE2751529200C0144B /* rects */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -146,21 +150,10 @@
 		652ADB2A27404DEB0009E305 /* hello_world */ = {
 			isa = PBXGroup;
 			children = (
-				652ADB3027404DEC0009E305 /* foo.c */,
 				652ADB3127404DEC0009E305 /* hello_world.c */,
-				652ADB3227404DEC0009E305 /* foo.h */,
 			);
 			name = hello_world;
 			path = ../hello_world;
-			sourceTree = "<group>";
-		};
-		652ADB4C27404E450009E305 /* shapes */ = {
-			isa = PBXGroup;
-			children = (
-				652ADB5227404E450009E305 /* main.c */,
-			);
-			name = shapes;
-			path = ../shapes;
 			sourceTree = "<group>";
 		};
 		653B804827494959007D158D /* skcanvas_paint */ = {
@@ -175,6 +168,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		65232BED2751529200C0144B /* rects */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65232BF42751529300C0144B /* Build configuration list for PBXNativeTarget "rects" */;
+			buildPhases = (
+				65232BEA2751529200C0144B /* Sources */,
+				65232BEB2751529200C0144B /* Frameworks */,
+				65232BEC2751529200C0144B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = rects;
+			productName = rects;
+			productReference = 65232BEE2751529200C0144B /* rects */;
+			productType = "com.apple.product-type.tool";
+		};
 		652ADA7A273D88EC0009E305 /* hello_world */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 652ADA7F273D88ED0009E305 /* Build configuration list for PBXNativeTarget "hello_world" */;
@@ -190,23 +200,6 @@
 			name = hello_world;
 			productName = hello_world;
 			productReference = 652ADA7B273D88EC0009E305 /* hello_world */;
-			productType = "com.apple.product-type.tool";
-		};
-		652ADB4027404E2C0009E305 /* shapes */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 652ADB4527404E2C0009E305 /* Build configuration list for PBXNativeTarget "shapes" */;
-			buildPhases = (
-				652ADB3D27404E2C0009E305 /* Sources */,
-				652ADB3E27404E2C0009E305 /* Frameworks */,
-				652ADB3F27404E2C0009E305 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = shapes;
-			productName = shapes;
-			productReference = 652ADB4127404E2C0009E305 /* shapes */;
 			productType = "com.apple.product-type.tool";
 		};
 		653B804C27494976007D158D /* skcanvas_paint */ = {
@@ -234,10 +227,10 @@
 			attributes = {
 				LastUpgradeCheck = 1240;
 				TargetAttributes = {
-					652ADA7A273D88EC0009E305 = {
+					65232BED2751529200C0144B = {
 						CreatedOnToolsVersion = 12.4;
 					};
-					652ADB4027404E2C0009E305 = {
+					652ADA7A273D88EC0009E305 = {
 						CreatedOnToolsVersion = 12.4;
 					};
 					653B804C27494976007D158D = {
@@ -259,27 +252,26 @@
 			projectRoot = "";
 			targets = (
 				652ADA7A273D88EC0009E305 /* hello_world */,
-				652ADB4027404E2C0009E305 /* shapes */,
 				653B804C27494976007D158D /* skcanvas_paint */,
+				65232BED2751529200C0144B /* rects */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		65232BEA2751529200C0144B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65232BFA275152C900C0144B /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		652ADA77273D88EC0009E305 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				652ADB3727404DEC0009E305 /* foo.c in Sources */,
 				652ADB3827404DEC0009E305 /* hello_world.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		652ADB3D27404E2C0009E305 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				652ADB5727404E450009E305 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,6 +286,32 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		65232BF22751529300C0144B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = XA8U8K5RRK;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		65232BF32751529300C0144B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = XA8U8K5RRK;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		652ADA6F273D887E0009E305 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -468,32 +486,6 @@
 			};
 			name = Release;
 		};
-		652ADB4627404E2C0009E305 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_HARDENED_RUNTIME = NO;
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		652ADB4727404E2C0009E305 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_HARDENED_RUNTIME = NO;
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		653B805227494976007D158D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -523,6 +515,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		65232BF42751529300C0144B /* Build configuration list for PBXNativeTarget "rects" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65232BF22751529300C0144B /* Debug */,
+				65232BF32751529300C0144B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		652ADA65273D887E0009E305 /* Build configuration list for PBXProject "CSkia Examples" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -537,15 +538,6 @@
 			buildConfigurations = (
 				652ADA80273D88ED0009E305 /* Debug */,
 				652ADA81273D88ED0009E305 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		652ADB4527404E2C0009E305 /* Build configuration list for PBXNativeTarget "shapes" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				652ADB4627404E2C0009E305 /* Debug */,
-				652ADB4727404E2C0009E305 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

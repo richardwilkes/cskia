@@ -20,10 +20,9 @@
 #include <unistd.h>  // getcwd
 #include <limits.h>  // PATH_MAX
 
-
 #include "sk_capi.h"
 
-const sk_image_t *image = NULL;
+const sk_image_t* image = NULL;
 
 // https://fiddle.skia.org/c/@skcanvas_paint
 void draw(sk_canvas_t* canvas) {
@@ -39,10 +38,9 @@ void draw(sk_canvas_t* canvas) {
     sk_paint_set_stroke_width(paint, 4);
     sk_paint_set_color(paint, 0xFFFF0000);
 
-
     // SkRect rect = SkRect::MakeXYWH(50, 50, 40, 60);
     // canvas->drawRect(rect, paint);
-    sk_rect_t rect = {.left=50, .top=50, .right = 50+40, .bottom = 50+60 };
+    sk_rect_t rect = {.left = 50, .top = 50, .right = 50 + 40, .bottom = 50 + 60};
     sk_canvas_draw_rect(canvas, &rect, paint);
 
     /*
@@ -62,7 +60,7 @@ void draw(sk_canvas_t* canvas) {
     // rect.offset(80, 0);
     // paint.setColor(SK_ColorYELLOW);
     // canvas->drawRoundRect(rect, 10, 10, paint);
-    sk_rect_t offetRect = {.left=rect.left + 80, .right=rect.right+80, .top=rect.top +0, .bottom=rect.bottom+0};
+    sk_rect_t offetRect = {.left = rect.left + 80, .right = rect.right + 80, .top = rect.top + 0, .bottom = rect.bottom + 0};
     sk_paint_set_color(paint, 0xFFFFFF00);
     sk_canvas_draw_round_rect(canvas, &offetRect, 10, 10, paint);
 
@@ -70,7 +68,7 @@ void draw(sk_canvas_t* canvas) {
     // path.cubicTo(768, 0, -512, 256, 256, 256);
     // paint.setColor(SK_ColorGREEN);
     // canvas->drawPath(path, paint);
-    sk_path_t *path = sk_path_new();
+    sk_path_t* path = sk_path_new();
     sk_path_cubic_to(path, 768, 0, -512, 256, 256, 256);
     sk_paint_set_color(paint, 0xFF00FF00);
     sk_canvas_draw_path(canvas, path, paint);
@@ -81,19 +79,18 @@ void draw(sk_canvas_t* canvas) {
     imageW = sk_image_get_width(image);
     imageH = sk_image_get_height(image);
 
-    sk_rect_t srcRect = {.left=0, .top=0, .right=imageW, .bottom=imageH};
-    sk_rect_t dstRect = {.left=128, .top=128, .right=128+imageW, .bottom=128+imageH};
+    sk_rect_t srcRect = {.left = 0, .top = 0, .right = imageW, .bottom = imageH};
+    sk_rect_t dstRect = {.left = 128, .top = 128, .right = 128 + imageW, .bottom = 128 + imageH};
     sk_sampling_options_t samplingOpts = {
         .useCubic = true,
-        .cubic = {.B=1/3.0, .C=1/3.0}, // Mitchell
+        .cubic = {.B = 1 / 3.0, .C = 1 / 3.0},  // Mitchell
         .filter = SK_FILTER_MODE_NEAREST,
-        .mipmap = SK_MIPMAP_MODE_NONE
-    };
+        .mipmap = SK_MIPMAP_MODE_NONE};
     sk_canvas_draw_image_rect(canvas, image, &srcRect, &dstRect, &samplingOpts, paint, SRC_RECT_CONSTRAINT_FAST);
 
     // SkRect rect2 = SkRect::MakeXYWH(0, 0, 40, 60);
     // canvas->drawImageRect(image, rect2, SkSamplingOptions(), &paint);
-    sk_rect_t squeezedDstRect = {.left=0, .top=0, .right=40, .bottom=60};
+    sk_rect_t squeezedDstRect = {.left = 0, .top = 0, .right = 40, .bottom = 60};
     sk_canvas_draw_image_rect(canvas, image, &srcRect, &squeezedDstRect, &samplingOpts, paint, SRC_RECT_CONSTRAINT_FAST);
 
     // SkPaint paint2;
@@ -101,12 +98,11 @@ void draw(sk_canvas_t* canvas) {
     // canvas->drawTextBlob(text.get(), 50, 25, paint2);
     sk_paint_t* paint2 = sk_paint_new();
     sk_font_t* font = sk_font_new_with_values(NULL, 18, 1.0, 0.0);
-    const char * s = "Hello Skia!";
-    sk_text_blob_t *text = sk_textblob_make_from_text(s, strlen(s), font, SK_TEXT_ENCODING_UTF8 );
+    const char* s = "Hello Skia!";
+    sk_text_blob_t* text = sk_textblob_make_from_text(s, strlen(s), font, SK_TEXT_ENCODING_UTF8);
     sk_canvas_draw_text_blob(canvas, text, 50, 25, paint2);
     sk_font_delete(font);
     sk_paint_delete(paint2);
-
 
     sk_paint_delete(paint);
 }
@@ -193,21 +189,19 @@ static sk_surface_t* newSurface(gr_direct_context_t* context, const int w, const
     return surface;
 }
 
-
-static const sk_image_t* loadImage(const char* imageFile){
+static const sk_image_t* loadImage(const char* imageFile) {
     char imagePath[PATH_MAX];
     int imageFileLen = (int)strlen(imageFile);
     // Leave space in imagePath for '/' + imageFile + '\0'
     int cwdBufferSize = sizeof(imagePath) - (1 + imageFileLen + 1);
-    if (cwdBufferSize>0 && getcwd(imagePath, cwdBufferSize) == NULL) {
+    if (cwdBufferSize > 0 && getcwd(imagePath, cwdBufferSize) == NULL) {
         fprintf(stderr, "Failed to get the current working dir\n");
         exit(EXIT_FAILURE);
     }
     strncat(imagePath, "/", 1);
     strncat(imagePath, imageFile, imageFileLen);
 
-
-    FILE *file = fopen(imageFile,"rb");
+    FILE* file = fopen(imageFile, "rb");
     if (file == NULL) {
         fprintf(stderr, "Could not open file \"%s\".\n", imagePath);
         exit(74);
@@ -229,20 +223,20 @@ static const sk_image_t* loadImage(const char* imageFile){
         exit(74);
     }
 
-    sk_data_t *data = sk_data_new_with_copy(buffer, bytesRead);
+    sk_data_t* data = sk_data_new_with_copy(buffer, bytesRead);
     if (data == NULL) {
         fprintf(stderr, "Could not create data from file \"%s\".\n", imagePath);
         exit(74);
     }
 
-    sk_image_t *image = sk_image_new_from_encoded(data);
+    sk_image_t* image = sk_image_new_from_encoded(data);
     if (image == NULL) {
         fprintf(stderr, "Could not create image from file \"%s\".\n", imagePath);
         exit(74);
     }
 
     sk_data_unref(data);
-    free((void *)buffer);
+    free((void*)buffer);
     fclose(file);
 
     return image;
