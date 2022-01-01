@@ -104,14 +104,15 @@ Darwin*)
   OS_TYPE=darwin
   LIB_NAME=libskia.a
   case $(uname -m) in
-  x86_64)
+  x86_64*)
     UNISON_LIB_NAME=libskia_darwin_amd64.a
+    export MACOSX_DEPLOYMENT_TARGET=10.13
     ;;
-  arm)
+  arm*)
     UNISON_LIB_NAME=libskia_darwin_arm64.a
+    export MACOSX_DEPLOYMENT_TARGET=11
     ;;
   esac
-  export MACOSX_DEPLOYMENT_TARGET=10.13
   PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=true \
