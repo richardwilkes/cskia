@@ -1319,16 +1319,16 @@ sk_surface_props_t* sk_surfaceprops_new(uint32_t flags, sk_pixel_geometry_t geom
 }
 
 // ===== Functions from include/core/SkTextBlob.h =====
-void sk_textblob_builder_alloc_run(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float x, float y, const sk_rect_t* bounds, sk_text_blob_builder_run_buffer_t* runbuffer) {
-    *runbuffer = reinterpret_cast<const sk_text_blob_builder_run_buffer_t&>(reinterpret_cast<SkTextBlobBuilder*>(builder)->allocRun(reinterpret_cast<const SkFont&>(*font), count, x, y, reinterpret_cast<const SkRect*>(bounds)));
+const sk_text_blob_builder_run_buffer_t* sk_textblob_builder_alloc_run(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float x, float y, const sk_rect_t* bounds) {
+    return &reinterpret_cast<const sk_text_blob_builder_run_buffer_t&>(reinterpret_cast<SkTextBlobBuilder*>(builder)->allocRun(reinterpret_cast<const SkFont&>(*font), count, x, y, reinterpret_cast<const SkRect*>(bounds)));
 }
 
-void sk_textblob_builder_alloc_run_pos(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, const sk_rect_t* bounds, sk_text_blob_builder_run_buffer_t* runbuffer) {
-    *runbuffer = reinterpret_cast<const sk_text_blob_builder_run_buffer_t&>(reinterpret_cast<SkTextBlobBuilder*>(builder)->allocRunPos(reinterpret_cast<const SkFont&>(*font), count, reinterpret_cast<const SkRect*>(bounds)));
+const sk_text_blob_builder_run_buffer_t* sk_textblob_builder_alloc_run_pos(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, const sk_rect_t* bounds) {
+    return &reinterpret_cast<const sk_text_blob_builder_run_buffer_t&>(reinterpret_cast<SkTextBlobBuilder*>(builder)->allocRunPos(reinterpret_cast<const SkFont&>(*font), count, reinterpret_cast<const SkRect*>(bounds)));
 }
 
-void sk_textblob_builder_alloc_run_pos_h(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float y, const sk_rect_t* bounds, sk_text_blob_builder_run_buffer_t* runbuffer) {
-    *runbuffer = reinterpret_cast<const sk_text_blob_builder_run_buffer_t&>(reinterpret_cast<SkTextBlobBuilder*>(builder)->allocRunPosH(reinterpret_cast<const SkFont&>(*font), count, y, reinterpret_cast<const SkRect*>(bounds)));
+const sk_text_blob_builder_run_buffer_t* sk_textblob_builder_alloc_run_pos_h(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float y, const sk_rect_t* bounds) {
+    return &reinterpret_cast<const sk_text_blob_builder_run_buffer_t&>(reinterpret_cast<SkTextBlobBuilder*>(builder)->allocRunPosH(reinterpret_cast<const SkFont&>(*font), count, y, reinterpret_cast<const SkRect*>(bounds)));
 }
 
 void sk_textblob_builder_delete(sk_text_blob_builder_t* builder) {

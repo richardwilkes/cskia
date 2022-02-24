@@ -829,9 +829,9 @@ SK_C_API void sk_surface_unref(sk_surface_t* surface);
 SK_C_API sk_surface_props_t* sk_surfaceprops_new(uint32_t flags, sk_pixel_geometry_t geometry);
 
 // ===== Functions from include/core/SkTextBlob.h =====
-SK_C_API void sk_textblob_builder_alloc_run(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float x, float y, const sk_rect_t* bounds, sk_text_blob_builder_run_buffer_t* runbuffer);
-SK_C_API void sk_textblob_builder_alloc_run_pos(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, const sk_rect_t* bounds, sk_text_blob_builder_run_buffer_t* runbuffer);
-SK_C_API void sk_textblob_builder_alloc_run_pos_h(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float y, const sk_rect_t* bounds, sk_text_blob_builder_run_buffer_t* runbuffer);
+SK_C_API const sk_text_blob_builder_run_buffer_t* sk_textblob_builder_alloc_run(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float x, float y, const sk_rect_t* bounds);
+SK_C_API const sk_text_blob_builder_run_buffer_t* sk_textblob_builder_alloc_run_pos(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, const sk_rect_t* bounds);
+SK_C_API const sk_text_blob_builder_run_buffer_t* sk_textblob_builder_alloc_run_pos_h(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float y, const sk_rect_t* bounds);
 SK_C_API void sk_textblob_builder_delete(sk_text_blob_builder_t* builder);
 SK_C_API sk_text_blob_t* sk_textblob_builder_make(sk_text_blob_builder_t* builder);
 SK_C_API sk_text_blob_builder_t* sk_textblob_builder_new(void);
