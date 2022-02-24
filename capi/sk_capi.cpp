@@ -651,6 +651,10 @@ sk_typeface_t* sk_fontmgr_match_family_style(sk_font_mgr_t* fontmgr, const char*
     return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontMgr*>(fontmgr)->matchFamilyStyle(familyName, *reinterpret_cast<SkFontStyle*>(style)));
 }
 
+sk_typeface_t* sk_fontmgr_match_family_style_character(sk_font_mgr_t* fontmgr, const char familyName[], sk_font_style_t* style, const char** bcp47, int bcp47Count, int32_t character) {
+    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontMgr*>(fontmgr)->matchFamilyStyleCharacter(familyName, *reinterpret_cast<SkFontStyle*>(style), bcp47, bcp47Count, character));
+}
+
 sk_font_mgr_t* sk_fontmgr_ref_default(void) {
     return reinterpret_cast<sk_font_mgr_t*>(SkFontMgr::RefDefault().release());
 }
