@@ -630,6 +630,18 @@ int sk_font_text_to_glyphs(const sk_font_t* font, const void* text, size_t byteL
     return reinterpret_cast<const SkFont*>(font)->textToGlyphs(text, byteLength, (SkTextEncoding)encoding, glyphs, maxGlyphCount);
 }
 
+uint16_t sk_font_unichar_to_glyph(const sk_font_t* font, int32_t unichar) {
+    return reinterpret_cast<const SkFont*>(font)->unicharToGlyph(unichar);
+}
+
+void sk_font_unichars_to_glyphs(const sk_font_t* font, const int32_t* unichars, int count, uint16_t* glyphs) {
+    return reinterpret_cast<const SkFont*>(font)->unicharsToGlyphs(unichars, count, glyphs);
+}
+
+void sk_font_glyph_widths(const sk_font_t* font, const uint16_t *glyphs, int count, float *widths) {
+    return reinterpret_cast<const SkFont*>(font)->getWidths(glyphs, count, widths);
+}
+
 // ===== Functions from include/core/SkFontMgr.h =====
 int sk_fontmgr_count_families(sk_font_mgr_t* fontmgr) {
     return reinterpret_cast<SkFontMgr*>(fontmgr)->countFamilies();
@@ -880,6 +892,10 @@ void sk_maskfilter_unref(sk_mask_filter_t* filter) {
 }
 
 // ===== Functions from include/core/SkPaint.h =====
+
+bool sk_paint_equivalent(sk_paint_t* cpaint, sk_paint_t* other) {
+    return reinterpret_cast<SkPaint*>(cpaint) == reinterpret_cast<SkPaint*>(other);
+}
 
 sk_paint_t* sk_paint_clone(sk_paint_t* paint) {
     return reinterpret_cast<sk_paint_t*>(new SkPaint(*reinterpret_cast<SkPaint*>(paint)));
