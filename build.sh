@@ -54,6 +54,7 @@ DIST=${PWD}/dist
 
 # As changes to Skia are made, these args may need to be adjusted.
 # Use 'bin/gn args $BUILD_DIR --list' to see what args are available.
+# Note: Turned off skia_use_libheif since having it on did not allow .heif files to be loaded...
 COMMON_ARGS=" \
   is_debug=false \
   is_official_build=true \
@@ -84,7 +85,7 @@ COMMON_ARGS=" \
   skia_use_harfbuzz=false \
   skia_use_icu=false \
   skia_use_libgifcodec=true \
-  skia_use_libheif=true \
+  skia_use_libheif=false \
   skia_use_lua=false \
   skia_use_metal=false \
   skia_use_piex=false \
