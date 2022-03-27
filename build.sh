@@ -104,6 +104,7 @@ case $(uname -s) in
 Darwin*)
   OS_TYPE=darwin
   LIB_NAME=libskia.a
+  PYTHON_BIN=python3
   case $(uname -m) in
   x86_64*)
     UNISON_LIB_NAME=libskia_darwin_amd64.a
