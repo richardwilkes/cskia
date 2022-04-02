@@ -108,7 +108,7 @@ Darwin*)
   case $(uname -m) in
   x86_64*)
     UNISON_LIB_NAME=libskia_darwin_amd64.a
-    export MACOSX_DEPLOYMENT_TARGET=10.13
+    export MACOSX_DEPLOYMENT_TARGET=10.14
     ;;
   arm*)
     UNISON_LIB_NAME=libskia_darwin_arm64.a
