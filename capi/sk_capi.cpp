@@ -146,7 +146,8 @@ static_assert((int)SkColorType::kR16G16_unorm_SkColorType       == (int)SK_COLOR
 static_assert((int)SkColorType::kA16_float_SkColorType          == (int)SK_COLOR_TYPE_A16_FLOAT,          ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR16G16_float_SkColorType       == (int)SK_COLOR_TYPE_R16G16_FLOAT,       ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR16G16B16A16_unorm_SkColorType == (int)SK_COLOR_TYPE_R16G16B16A16_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
-static_assert((int)SkColorType::kSRGBA_8888_SkColorType          == (int)SK_COLOR_TYPE_SRGBA_8888,        ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kSRGBA_8888_SkColorType         == (int)SK_COLOR_TYPE_SRGBA_8888,         ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kR8_unorm_SkColorType           == (int)SK_COLOR_TYPE_R8_UNORM,           ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kLastEnum_SkColorType           == (int)SK_COLOR_TYPE_LAST,               ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 
 // sk_encoded_image_format_t
