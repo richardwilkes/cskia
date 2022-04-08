@@ -2,9 +2,9 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set Fri Apr 8 02:55:00 2022 -0800
-DEPOT_TOOLS_COMMIT=e121d14b12412e95ac833cfd31602b674499ea25
-SKIA_COMMIT=2672fa0f9338ba1559e79d28f6fb8789feccc662
+# Last set Fri Apr 8 13:37:23 2022 -0800
+DEPOT_TOOLS_COMMIT=e22224512840a3f8cc5b298952b55b941fdf5add
+SKIA_COMMIT=3680698e9f50e0ed12f7508d556ec30e81cf8fdb
 
 for arg in "$@"
 do
