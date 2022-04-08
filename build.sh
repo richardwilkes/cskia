@@ -2,9 +2,9 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set Wed Nov 10 21:38:56 2021 +0000
-DEPOT_TOOLS_COMMIT=4d3319e39c9b50747f47da35a351d428a38bcc82
-SKIA_COMMIT=6fae0523629f9abf114d8b7413f71dc7295a13e0
+# Last set Fri Apr 8 02:55:00 2022 -0800
+DEPOT_TOOLS_COMMIT=e121d14b12412e95ac833cfd31602b674499ea25
+SKIA_COMMIT=2672fa0f9338ba1559e79d28f6fb8789feccc662
 
 for arg in "$@"
 do
@@ -77,7 +77,6 @@ COMMON_ARGS=" \
   skia_use_dng_sdk=false \
   skia_use_egl=false \
   skia_use_expat=false \
-  skia_use_experimental_xform=false \
   skia_use_ffmpeg=false \
   skia_use_fixed_gamma_text=false \
   skia_use_fontconfig=false \
@@ -104,7 +103,6 @@ case $(uname -s) in
 Darwin*)
   OS_TYPE=darwin
   LIB_NAME=libskia.a
-  PYTHON_BIN=python3
   case $(uname -m) in
   x86_64*)
     UNISON_LIB_NAME=libskia_darwin_amd64.a
@@ -157,8 +155,6 @@ MINGW*)
   OS_TYPE=windows
   LIB_NAME=skia.dll
   UNISON_LIB_NAME=skia_windows.dll
-  PYTHON_BIN=python
-  export PATH="/c/python27:${PATH}"
   PLATFORM_ARGS=" \
       is_component_build=true \
       skia_enable_fontmgr_win=true \
@@ -205,10 +201,7 @@ if [ ! -e skia ]; then
   git clone https://skia.googlesource.com/skia.git
   cd skia
   git reset --hard ${SKIA_COMMIT}
-  if [ "$OS_TYPE" != "windows" ]; then
-    echo 'script_executable = "vpython"' >> .gn
-  fi
-  ${PYTHON_BIN} tools/git-sync-deps
+  python3 tools/git-sync-deps
   cd ..
 fi
 

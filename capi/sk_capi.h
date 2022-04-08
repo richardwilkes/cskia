@@ -347,7 +347,8 @@ typedef enum {
     SK_COLOR_TYPE_R16G16B16A16_UNORM, // pixel with a little endian uint16_t for red, green, blue and alpha
 
     SK_COLOR_TYPE_SRGBA_8888,         // pixel with 8 bits for red, green, blue, alpha; in 32-bit word with conversion between sRGB and linear space
-    SK_COLOR_TYPE_LAST = SK_COLOR_TYPE_SRGBA_8888,
+    SK_COLOR_TYPE_R8_UNORM,
+    SK_COLOR_TYPE_LAST = SK_COLOR_TYPE_R8_UNORM,
 } sk_color_type_t;
 
 typedef enum {
