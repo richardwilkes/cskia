@@ -2,9 +2,9 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set Fri Apr 8 13:37:23 2022 -0800
-DEPOT_TOOLS_COMMIT=e22224512840a3f8cc5b298952b55b941fdf5add
-SKIA_COMMIT=3680698e9f50e0ed12f7508d556ec30e81cf8fdb
+# Last set Thu Aug 18 16:12:52 PDT 2022
+DEPOT_TOOLS_COMMIT=1cf1fb5d214aab7afec77d2fd646addea34e52ff
+SKIA_BRANCH=chrome/m105
 
 for arg in "$@"
 do
@@ -192,52 +192,45 @@ cd skia
 if [ ! -e depot_tools ]; then
   git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
   cd depot_tools
-  git reset --hard ${DEPOT_TOOLS_COMMIT}
+  git reset --hard "${DEPOT_TOOLS_COMMIT}"
   cd ..
 fi
 export PATH="${PWD}/depot_tools:${PATH}"
 
 if [ ! -e skia ]; then
-  git clone https://skia.googlesource.com/skia.git
+  git clone https://github.com/google/skia.git
   cd skia
-  git reset --hard ${SKIA_COMMIT}
+  git checkout -b "${SKIA_BRANCH}"
   python3 tools/git-sync-deps
   cd ..
 fi
 
-# Apply our changes. We get rid of the existing C api files, as they are minimal and don't
-# actually provide anything useful and install our own. We also truncate the C example file
-# since it relies on those old C api's.
+# Apply our changes.
 cd skia
-/bin/rm -rf src/c include/c
 cp ../../capi/sk_capi.h include/
 cp ../../capi/sk_capi.cpp src/
-
-grep -v "/c/" gn/core.gni | grep -v "sk_capi.cpp" | sed -e 's@skia_core_sources = \[@&\
+grep -v "sk_capi.cpp" gn/core.gni | sed -e 's@skia_core_sources = \[@&\
   "$_src/sk_capi.cpp",@' >gn/core.revised.gni
 mv gn/core.revised.gni gn/core.gni
-grep -v "/c/" gn/effects.gni >gn/effects.revised.gni
-mv gn/effects.revised.gni gn/effects.gni
-echo "int main() { return 0; }" >experimental/c-api-example/skia-c-example.c
 
 # Perform the build
-bin/gn gen $BUILD_DIR --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
-ninja -C $BUILD_DIR
+bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
+ninja -C "${BUILD_DIR}"
 
 # Copy the result into ${DIST}
-mkdir -p ${DIST}/include
+mkdir -p "${DIST}/include"
 /bin/rm -f ${DIST}/include/*.h
-cp include/sk_capi.h ${DIST}/include/
-mkdir -p ${DIST}/lib/${OS_TYPE}
-cp ${BUILD_DIR}/${LIB_NAME} ${DIST}/lib/${OS_TYPE}/
+cp include/sk_capi.h "${DIST}/include/"
+mkdir -p "${DIST}/lib/${OS_TYPE}"
+cp "${BUILD_DIR}/${LIB_NAME}" "${DIST}/lib/${OS_TYPE}/"
 
 cd ../..
 
 # If present, also copy the results into the unison build tree
 if [ -d ../unison ]; then
   RELATIVE_UNISON_DIR=../unison/internal/skia
-  mkdir -p ${RELATIVE_UNISON_DIR}
-  cp ${DIST}/include/sk_capi.h ${RELATIVE_UNISON_DIR}/
-  cp ${DIST}/lib/${OS_TYPE}/${LIB_NAME} ${RELATIVE_UNISON_DIR}/${UNISON_LIB_NAME}
+  mkdir -p "${RELATIVE_UNISON_DIR}"
+  cp "${DIST}/include/sk_capi.h" "${RELATIVE_UNISON_DIR}/"
+  cp "${DIST}/lib/${OS_TYPE}/${LIB_NAME}" "${RELATIVE_UNISON_DIR}/${UNISON_LIB_NAME}"
   echo "Copied distribution to unison"
 fi
