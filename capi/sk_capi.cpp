@@ -4,10 +4,12 @@
 #include "include/core/SkCanvas.h"
 #include "include/core/SkColorSpace.h"
 #include "include/core/SkData.h"
+#include "include/core/SkDocument.h"
 #include "include/core/SkEncodedImageFormat.h"
 #include "include/core/SkFontMetrics.h"
 #include "include/core/SkFontMgr.h"
 #include "include/core/SkPoint3.h"
+#include "include/core/SkStream.h"
 #include "include/core/SkSurface.h"
 #include "include/core/SkTextBlob.h"
 #include "include/effects/Sk1DPathEffect.h"
@@ -27,6 +29,8 @@
 #include "include/effects/SkTrimPathEffect.h"
 #include "include/pathops/SkPathOps.h"
 #include "include/utils/SkParsePath.h"
+#include "include/docs/SkPDFDocument.h"
+#include "src/pdf/SkPDFDocumentPriv.h"
 
 #define SK_SKIP_ARG__(keep, skip, ...) skip
 #define SK_SKIP_ARG_(args) SK_SKIP_ARG__ args
@@ -1254,8 +1258,9 @@ sk_shader_t* sk_shader_new_color(sk_color_t color) {
 
 sk_shader_t* sk_shader_new_linear_gradient(const sk_point_t points[2], const sk_color_t colors[], const float colorPos[], int colorCount, sk_tile_mode_t tileMode, const sk_matrix_t* localMatrix) {
     SkMatrix m;
-    if (localMatrix)
+    if (localMatrix) {
         m = AsMatrix(localMatrix);
+    }
     return reinterpret_cast<sk_shader_t*>(SkGradientShader::MakeLinear(reinterpret_cast<const SkPoint*>(points), colors, colorPos, colorCount, (SkTileMode)tileMode, 0, localMatrix ? &m : nullptr).release());
 }
 
@@ -1269,22 +1274,25 @@ sk_shader_t* sk_shader_new_perlin_noise_turbulence(float baseFrequencyX, float b
 
 sk_shader_t* sk_shader_new_radial_gradient(const sk_point_t* center, float radius, const sk_color_t colors[], const float colorPos[], int colorCount, sk_tile_mode_t tileMode, const sk_matrix_t* localMatrix) {
     SkMatrix m;
-    if (localMatrix)
+    if (localMatrix) {
         m = AsMatrix(localMatrix);
+    }
     return reinterpret_cast<sk_shader_t*>(SkGradientShader::MakeRadial(*reinterpret_cast<const SkPoint*>(center), (SkScalar)radius, colors, colorPos, colorCount, (SkTileMode)tileMode, 0, localMatrix ? &m : nullptr).release());
 }
 
 sk_shader_t* sk_shader_new_sweep_gradient(const sk_point_t* center, const sk_color_t colors[], const float colorPos[], int colorCount, sk_tile_mode_t tileMode, float startAngle, float endAngle, const sk_matrix_t* localMatrix) {
     SkMatrix m;
-    if (localMatrix)
+    if (localMatrix) {
         m = AsMatrix(localMatrix);
+    }
     return reinterpret_cast<sk_shader_t*>(SkGradientShader::MakeSweep(center->x, center->y, colors, colorPos, colorCount, (SkTileMode)tileMode, startAngle, endAngle, 0, localMatrix ? &m : nullptr).release());
 }
 
 sk_shader_t* sk_shader_new_two_point_conical_gradient(const sk_point_t* start, float startRadius, const sk_point_t* end, float endRadius, const sk_color_t colors[], const float colorPos[], int colorCount, sk_tile_mode_t tileMode, const sk_matrix_t* localMatrix) {
     SkMatrix m;
-    if (localMatrix)
+    if (localMatrix) {
         m = AsMatrix(localMatrix);
+    }
     return reinterpret_cast<sk_shader_t*>(SkGradientShader::MakeTwoPointConical(*reinterpret_cast<const SkPoint*>(start), startRadius, *reinterpret_cast<const SkPoint*>(end), endRadius, colors, colorPos, colorCount, (SkTileMode)tileMode, 0, localMatrix ? &m : nullptr).release());
 }
 
@@ -1398,4 +1406,68 @@ bool sk_typeface_is_fixed_pitch(const sk_typeface_t* typeface) {
 
 void sk_typeface_unref(sk_typeface_t* typeface) {
     SkSafeUnref(reinterpret_cast<SkTypeface*>(typeface));
+}
+
+// ===== Functions from include/core/SkStream.h =====
+
+sk_dynamic_memory_wstream_t* sk_dynamic_memory_wstream_new(void) {
+	return reinterpret_cast<sk_dynamic_memory_wstream_t*>(new SkDynamicMemoryWStream());
+}
+
+bool sk_dynamic_memory_wstream_write(sk_dynamic_memory_wstream_t* stream, void *buffer, size_t size) {
+	return reinterpret_cast<SkDynamicMemoryWStream*>(stream)->write(buffer, size);
+}
+
+size_t sk_dynamic_memory_wstream_bytes_written(sk_dynamic_memory_wstream_t* stream) {
+	return reinterpret_cast<SkDynamicMemoryWStream*>(stream)->bytesWritten();
+}
+
+bool sk_dynamic_memory_wstream_read(sk_dynamic_memory_wstream_t* stream, void *buffer, size_t offset, size_t size) {
+	return reinterpret_cast<SkDynamicMemoryWStream*>(stream)->read(buffer, offset, size);
+}
+
+void sk_dynamic_memory_wstream_delete(sk_dynamic_memory_wstream_t* stream) {
+	delete reinterpret_cast<SkDynamicMemoryWStream*>(stream);
+}
+
+sk_file_wstream_t* sk_file_wstream_new(const char path[]) {
+	return reinterpret_cast<sk_file_wstream_t*>(new SkFILEWStream(path));
+}
+
+bool sk_file_wstream_write(sk_file_wstream_t* stream, void *buffer, size_t size) {
+	return reinterpret_cast<SkFILEWStream*>(stream)->write(buffer, size);
+}
+
+size_t sk_file_wstream_bytes_written(sk_file_wstream_t* stream) {
+	return reinterpret_cast<SkFILEWStream*>(stream)->bytesWritten();
+}
+
+void sk_file_wstream_flush(sk_file_wstream_t* stream) {
+	reinterpret_cast<SkFILEWStream*>(stream)->flush();
+}
+
+void sk_file_wstream_delete(sk_file_wstream_t* stream) {
+	delete reinterpret_cast<SkFILEWStream*>(stream);
+}
+
+// ===== Functions from include/core/SkDocument.h =====
+sk_canvas_t* sk_document_begin_page(sk_document_t* doc, float width, float height) {
+	return reinterpret_cast<sk_canvas_t*>(reinterpret_cast<SkDocument*>(doc)->beginPage(width, height));
+}
+
+void sk_document_end_page(sk_document_t* doc) {
+	reinterpret_cast<SkDocument*>(doc)->endPage();
+}
+
+void sk_document_close(sk_document_t* doc) {
+	reinterpret_cast<SkDocument*>(doc)->close();
+}
+
+void sk_document_abort(sk_document_t* doc) {
+	reinterpret_cast<SkDocument*>(doc)->abort();
+}
+
+// ===== Functions from include/docs/SkPDFDocument.h =====
+sk_document_t* sk_document_make_pdf(sk_wstream_t* stream, sk_metadata_t* metadata) {
+	return reinterpret_cast<sk_document_t*>(new SkPDFDocument(reinterpret_cast<SkWStream*>(stream), reinterpret_cast<const SkPDF::Metadata&>(metadata)));
 }
