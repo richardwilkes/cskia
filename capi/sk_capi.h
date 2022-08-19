@@ -908,12 +908,14 @@ SK_C_API void sk_typeface_unref(sk_typeface_t* typeface);
 // ===== Functions from include/core/SkStream.h =====
 
 SK_C_API sk_dynamic_memory_wstream_t* sk_dynamic_memory_wstream_new(void);
+SK_C_API sk_wstream_t* sk_dynamic_memory_wstream_as_wstream(sk_dynamic_memory_wstream_t* stream);
 SK_C_API bool sk_dynamic_memory_wstream_write(sk_dynamic_memory_wstream_t* stream, const void *buffer, size_t size);
 SK_C_API size_t sk_dynamic_memory_wstream_bytes_written(sk_dynamic_memory_wstream_t* stream);
-SK_C_API bool sk_dynamic_memory_wstream_read(sk_dynamic_memory_wstream_t* stream, void *buffer, size_t offset, size_t size);
+SK_C_API size_t sk_dynamic_memory_wstream_read(sk_dynamic_memory_wstream_t* stream, void *buffer, size_t offset, size_t size);
 SK_C_API void sk_dynamic_memory_wstream_delete(sk_dynamic_memory_wstream_t* stream);
 
 SK_C_API sk_file_wstream_t* sk_file_wstream_new(const char path[]);
+SK_C_API sk_wstream_t* sk_file_wstream_as_wstream(sk_file_wstream_t* stream);
 SK_C_API bool sk_file_wstream_write(sk_file_wstream_t* stream, const void *buffer, size_t size);
 SK_C_API size_t sk_file_wstream_bytes_written(sk_file_wstream_t* stream);
 SK_C_API void sk_file_wstream_flush(sk_file_wstream_t* stream);

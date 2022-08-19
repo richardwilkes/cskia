@@ -1414,7 +1414,11 @@ sk_dynamic_memory_wstream_t* sk_dynamic_memory_wstream_new(void) {
 	return reinterpret_cast<sk_dynamic_memory_wstream_t*>(new SkDynamicMemoryWStream());
 }
 
-bool sk_dynamic_memory_wstream_write(sk_dynamic_memory_wstream_t* stream, void *buffer, size_t size) {
+sk_wstream_t* sk_dynamic_memory_wstream_as_wstream(sk_dynamic_memory_wstream_t* stream) {
+	return reinterpret_cast<sk_wstream_t*>(stream);
+}
+
+bool sk_dynamic_memory_wstream_write(sk_dynamic_memory_wstream_t* stream, const void *buffer, size_t size) {
 	return reinterpret_cast<SkDynamicMemoryWStream*>(stream)->write(buffer, size);
 }
 
@@ -1422,7 +1426,7 @@ size_t sk_dynamic_memory_wstream_bytes_written(sk_dynamic_memory_wstream_t* stre
 	return reinterpret_cast<SkDynamicMemoryWStream*>(stream)->bytesWritten();
 }
 
-bool sk_dynamic_memory_wstream_read(sk_dynamic_memory_wstream_t* stream, void *buffer, size_t offset, size_t size) {
+size_t sk_dynamic_memory_wstream_read(sk_dynamic_memory_wstream_t* stream, void *buffer, size_t offset, size_t size) {
 	return reinterpret_cast<SkDynamicMemoryWStream*>(stream)->read(buffer, offset, size);
 }
 
@@ -1434,7 +1438,11 @@ sk_file_wstream_t* sk_file_wstream_new(const char path[]) {
 	return reinterpret_cast<sk_file_wstream_t*>(new SkFILEWStream(path));
 }
 
-bool sk_file_wstream_write(sk_file_wstream_t* stream, void *buffer, size_t size) {
+sk_wstream_t* sk_file_wstream_as_wstream(sk_file_wstream_t* stream) {
+	return reinterpret_cast<sk_wstream_t*>(stream);
+}
+
+bool sk_file_wstream_write(sk_file_wstream_t* stream, const void *buffer, size_t size) {
 	return reinterpret_cast<SkFILEWStream*>(stream)->write(buffer, size);
 }
 
