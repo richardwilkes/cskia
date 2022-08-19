@@ -205,13 +205,18 @@ if [ ! -e skia ]; then
   cd ..
 fi
 
-# Apply our changes.
+# Apply our changes. We get rid of the existing C api files, as they are minimal and don't actually provide anything
+# useful and install our own.
 cd skia
+/bin/rm -rf src/c include/c
 cp ../../capi/sk_capi.h include/
 cp ../../capi/sk_capi.cpp src/
-grep -v "sk_capi.cpp" gn/core.gni | sed -e 's@skia_core_sources = \[@&\
+grep -v "/c/" gn/core.gni | grep -v "sk_capi.cpp" | sed -e 's@skia_core_sources = \[@&\
   "$_src/sk_capi.cpp",@' >gn/core.revised.gni
 mv gn/core.revised.gni gn/core.gni
+grep -v "/c/" gn/effects.gni >gn/effects.revised.gni
+mv gn/effects.revised.gni gn/effects.gni
+echo "int main() { return 0; }" >experimental/c-api-example/skia-c-example.c
 
 # Perform the build
 bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
