@@ -387,6 +387,10 @@ const gr_glinterface_t* gr_glinterface_create_native_interface(void) {
 }
 
 // ===== Functions from include/core/SkCanvas.h =====
+sk_surface_t* sk_canvas_get_surface(sk_canvas_t* canvas) {
+    return reinterpret_cast<sk_surface_t*>(reinterpret_cast<SkCanvas*>(canvas)->getSurface());
+}
+
 void sk_canvas_clear(sk_canvas_t* canvas, sk_color_t color) {
     reinterpret_cast<SkCanvas*>(canvas)->clear(color);
 }
@@ -742,6 +746,10 @@ int sk_image_get_width(const sk_image_t* cimage) {
     return reinterpret_cast<const SkImage*>(cimage)->width();
 }
 
+sk_image_t* sk_image_make_non_texture_image(const sk_image_t* image) {
+    return reinterpret_cast<sk_image_t*>(reinterpret_cast<const SkImage*>(image)->makeNonTextureImage().release());
+}
+
 sk_shader_t* sk_image_make_shader(const sk_image_t* image, sk_tile_mode_t tileX, sk_tile_mode_t tileY, const sk_sampling_options_t *samplingOptions, const sk_matrix_t* cmatrix) {
     SkMatrix m;
     if (cmatrix) {
@@ -750,8 +758,8 @@ sk_shader_t* sk_image_make_shader(const sk_image_t* image, sk_tile_mode_t tileX,
     return reinterpret_cast<sk_shader_t*>(reinterpret_cast<const SkImage*>(image)->makeShader((SkTileMode)tileX, (SkTileMode)tileY, *reinterpret_cast<const SkSamplingOptions*>(samplingOptions), cmatrix ? &m : nullptr).release());
 }
 
-sk_image_t* sk_image_make_texture_image(const sk_image_t* cimage, gr_direct_context_t* context, bool mipmapped) {
-    return reinterpret_cast<sk_image_t*>(reinterpret_cast<const SkImage*>(cimage)->makeTextureImage(reinterpret_cast<GrDirectContext*>(context), (GrMipMapped)mipmapped).release());
+sk_image_t* sk_image_make_texture_image(const sk_image_t* image, gr_direct_context_t* context, bool mipmapped) {
+    return reinterpret_cast<sk_image_t*>(reinterpret_cast<const SkImage*>(image)->makeTextureImage(reinterpret_cast<GrDirectContext*>(context), (GrMipMapped)mipmapped).release());
 }
 
 sk_image_t* sk_image_new_from_encoded(sk_data_t* cdata) {
@@ -1309,6 +1317,14 @@ sk_shader_t* sk_shader_with_local_matrix(const sk_shader_t* shader, const sk_mat
 }
 
 // ===== Functions from include/core/SkString.h =====
+sk_string_t* sk_string_new(const char* text, size_t len) {
+	return reinterpret_cast<sk_string_t*>(new SkString(text, len));
+}
+
+sk_string_t* sk_string_new_empty(void) {
+    return reinterpret_cast<sk_string_t*>(new SkString());
+}
+
 void sk_string_delete(const sk_string_t* cstring) {
     delete reinterpret_cast<const SkString*>(cstring);
 }
@@ -1319,10 +1335,6 @@ const char* sk_string_get_c_str(const sk_string_t* cstring) {
 
 size_t sk_string_get_size(const sk_string_t* cstring) {
     return reinterpret_cast<const SkString*>(cstring)->size();
-}
-
-sk_string_t* sk_string_new_empty(void) {
-    return reinterpret_cast<sk_string_t*>(new SkString());
 }
 
 // ===== Functions from include/core/SkSurface.h =====
@@ -1434,7 +1446,7 @@ void sk_dynamic_memory_wstream_delete(sk_dynamic_memory_wstream_t* stream) {
 	delete reinterpret_cast<SkDynamicMemoryWStream*>(stream);
 }
 
-sk_file_wstream_t* sk_file_wstream_new(const char path[]) {
+sk_file_wstream_t* sk_file_wstream_new(const char* path) {
 	return reinterpret_cast<sk_file_wstream_t*>(new SkFILEWStream(path));
 }
 
@@ -1476,6 +1488,41 @@ void sk_document_abort(sk_document_t* doc) {
 }
 
 // ===== Functions from include/docs/SkPDFDocument.h =====
+
+static void sk_convertDateTime(SkTime::DateTime* to, sk_date_time_t* from) {
+	to->fTimeZoneMinutes = from->timeZoneMinutes;
+	to->fYear = from->year;
+	to->fMonth = from->month;
+	to->fDayOfWeek = from->dayOfWeek;
+	to->fDay = from->day;
+	to->fHour = from->hour;
+	to->fMinute = from->minute;
+	to->fSecond = from->second;
+}
+
 sk_document_t* sk_document_make_pdf(sk_wstream_t* stream, sk_metadata_t* metadata) {
-	return reinterpret_cast<sk_document_t*>(new SkPDFDocument(reinterpret_cast<SkWStream*>(stream), reinterpret_cast<const SkPDF::Metadata&>(metadata)));
+	SkPDF::Metadata md;
+	if (metadata->title) {
+		md.fTitle = metadata->title;
+	}
+	if (metadata->author) {
+		md.fAuthor = metadata->author;
+	}
+	if (metadata->subject) {
+		md.fSubject = metadata->subject;
+	}
+	if (metadata->keywords) {
+		md.fKeywords = metadata->keywords;
+	}
+	if (metadata->creator) {
+		md.fCreator = metadata->creator;
+	}
+	if (metadata->producer) {
+		md.fProducer = metadata->producer;
+	}
+	sk_convertDateTime(&md.fCreation, &metadata->creation);
+	sk_convertDateTime(&md.fModified, &metadata->modified);
+	md.fRasterDPI = metadata->rasterDPI;
+	md.fEncodingQuality = metadata->encodingQuality;
+	return reinterpret_cast<sk_document_t*>(new SkPDFDocument(reinterpret_cast<SkWStream*>(stream), md));
 }
