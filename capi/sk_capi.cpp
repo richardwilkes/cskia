@@ -1338,12 +1338,24 @@ size_t sk_string_get_size(const sk_string_t* cstring) {
 }
 
 // ===== Functions from include/core/SkSurface.h =====
+sk_surface_t* sk_surface_make_raster_direct(const sk_image_info_t *imageInfo, void *pixels, size_t rowBytes, sk_surface_props_t* surfaceProps) {
+	return reinterpret_cast<sk_surface_t*>(SkSurface::MakeRasterDirect(*reinterpret_cast<const SkImageInfo *>(imageInfo), pixels, rowBytes, reinterpret_cast<const SkSurfaceProps*>(surfaceProps)).release());
+}
+
+sk_surface_t* sk_surface_make_raster_n32_premul(int width, int height, sk_surface_props_t* surfaceProps) {
+	return reinterpret_cast<sk_surface_t*>(SkSurface::MakeRasterN32Premul(width, height, reinterpret_cast<const SkSurfaceProps*>(surfaceProps)).release());
+}
+
 sk_canvas_t* sk_surface_get_canvas(sk_surface_t* surface) {
     return reinterpret_cast<sk_canvas_t*>(reinterpret_cast<SkSurface*>(surface)->getCanvas());
 }
 
 sk_surface_t* sk_surface_new_backend_render_target(gr_direct_context_t* context, const gr_backendrendertarget_t* target, gr_surface_origin_t origin, sk_color_type_t colorType, sk_color_space_t* colorspace, const sk_surface_props_t* props) {
     return reinterpret_cast<sk_surface_t*>(SkSurface::MakeFromBackendRenderTarget(reinterpret_cast<GrDirectContext*>(context), *reinterpret_cast<const GrBackendRenderTarget*>(target), (GrSurfaceOrigin)origin, (SkColorType)colorType, sk_ref_sp(reinterpret_cast<SkColorSpace*>(colorspace)), reinterpret_cast<const SkSurfaceProps*>(props)).release());
+}
+
+sk_image_t* sk_surface_make_image_snapshot(sk_surface_t* surface) {
+	return reinterpret_cast<sk_image_t*>(reinterpret_cast<SkSurface*>(surface)->makeImageSnapshot().release());
 }
 
 void sk_surface_unref(sk_surface_t* surface) {
