@@ -2,9 +2,9 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set Thu Aug 18 16:12:52 PDT 2022
-DEPOT_TOOLS_COMMIT=1cf1fb5d214aab7afec77d2fd646addea34e52ff
-SKIA_BRANCH=chrome/m105
+# Last set Sat Dec 17 10:01:14 PDT 2022
+DEPOT_TOOLS_COMMIT=5decb175432cb284b6f8ee102dc1b908b58d8e41
+SKIA_BRANCH=chrome/m110
 
 for arg in "$@"
 do
@@ -83,7 +83,6 @@ COMMON_ARGS=" \
   skia_use_gl=true \
   skia_use_harfbuzz=false \
   skia_use_icu=false \
-  skia_use_libgifcodec=true \
   skia_use_libheif=false \
   skia_use_lua=false \
   skia_use_metal=false \
@@ -205,18 +204,14 @@ if [ ! -e skia ]; then
   cd ..
 fi
 
-# Apply our changes. We get rid of the existing C api files, as they are minimal and don't actually provide anything
-# useful and install our own.
+# Apply our changes.
 cd skia
 /bin/rm -rf src/c include/c
 cp ../../capi/sk_capi.h include/
 cp ../../capi/sk_capi.cpp src/
-grep -v "/c/" gn/core.gni | grep -v "sk_capi.cpp" | sed -e 's@skia_core_sources = \[@&\
-  "$_src/sk_capi.cpp",@' >gn/core.revised.gni
-mv gn/core.revised.gni gn/core.gni
-grep -v "/c/" gn/effects.gni >gn/effects.revised.gni
-mv gn/effects.revised.gni gn/effects.gni
-echo "int main() { return 0; }" >experimental/c-api-example/skia-c-example.c
+sed -e 's@skia_core_sources = \[@&\
+  "$_src/sk_capi.cpp",@' gn/core.gni > gn/core.gni.new
+/bin/mv gn/core.gni.new gn/core.gni
 
 # Perform the build
 bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
