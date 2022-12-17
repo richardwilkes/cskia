@@ -8,6 +8,8 @@
 #include "include/core/SkEncodedImageFormat.h"
 #include "include/core/SkFontMetrics.h"
 #include "include/core/SkFontMgr.h"
+#include "include/core/SkMaskFilter.h"
+#include "include/core/SkPathUtils.h"
 #include "include/core/SkPoint3.h"
 #include "include/core/SkStream.h"
 #include "include/core/SkSurface.h"
@@ -931,7 +933,7 @@ sk_color_filter_t* sk_paint_get_colorfilter(sk_paint_t* cpaint) {
 }
 
 bool sk_paint_get_fill_path(const sk_paint_t* cpaint, const sk_path_t* src, sk_path_t* dst, const sk_rect_t* cullRect, float resScale) {
-    return reinterpret_cast<const SkPaint*>(cpaint)->getFillPath(*reinterpret_cast<const SkPath*>(src), reinterpret_cast<SkPath*>(dst), reinterpret_cast<const SkRect*>(cullRect), resScale);
+    return skpathutils::FillPathWithPaint(*reinterpret_cast<const SkPath*>(src), *reinterpret_cast<const SkPaint*>(cpaint), reinterpret_cast<SkPath*>(dst), reinterpret_cast<const SkRect*>(cullRect), resScale);
 }
 
 sk_image_filter_t* sk_paint_get_imagefilter(sk_paint_t* cpaint) {
@@ -1185,8 +1187,8 @@ void sk_path_set_filltype(sk_path_t* cpath, sk_path_fill_type_t cfilltype) {
     reinterpret_cast<SkPath*>(cpath)->setFillType((SkPathFillType)cfilltype);
 }
 
-void sk_path_to_svg_string(const sk_path_t* cpath, sk_string_t* str) {
-    SkParsePath::ToSVGString(*reinterpret_cast<const SkPath*>(cpath), reinterpret_cast<SkString*>(str));
+sk_string_t* sk_path_to_svg_string(const sk_path_t* cpath, bool absolute) {
+    return reinterpret_cast<sk_string_t*>(new SkString(SkParsePath::ToSVGString(*reinterpret_cast<const SkPath*>(cpath), absolute ? SkParsePath::PathEncoding::Absolute : SkParsePath::PathEncoding::Relative)));
 }
 
 void sk_path_transform(sk_path_t* cpath, const sk_matrix_t* cmatrix) {
