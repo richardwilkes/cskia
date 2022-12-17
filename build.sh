@@ -211,7 +211,7 @@ cp ../../capi/sk_capi.h include/
 cp ../../capi/sk_capi.cpp src/
 sed -e 's@skia_core_sources = \[@&\
   "$_src/sk_capi.cpp",@' gn/core.gni > gn/core.gni.new
-/bin/mv gn/core.gni.new gn/core/gni
+/bin/mv gn/core.gni.new gn/core.gni
 
 # Perform the build
 bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
