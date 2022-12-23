@@ -93,7 +93,7 @@ COMMON_ARGS=" \
   skia_use_system_libwebp=false \
   skia_use_system_zlib=false \
   skia_use_vulkan=false \
-  skia_use_wuffs=false \
+  skia_use_wuffs=true \
   skia_use_xps=false \
   skia_use_zlib=true \
 "
@@ -209,8 +209,8 @@ cd skia
 /bin/rm -rf src/c include/c
 cp ../../capi/sk_capi.h include/
 cp ../../capi/sk_capi.cpp src/
-sed -e 's@skia_core_sources = \[@&\
-  "$_src/sk_capi.cpp",@' gn/core.gni > gn/core.gni.new
+grep -v src/sk_capi.cpp gn/core.gni | sed -e 's@skia_core_sources = \[@&\
+  "$_src/sk_capi.cpp",@' > gn/core.gni.new
 /bin/mv gn/core.gni.new gn/core.gni
 
 # Perform the build
