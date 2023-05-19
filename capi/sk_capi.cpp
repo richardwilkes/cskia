@@ -379,6 +379,10 @@ gr_direct_context_t* gr_direct_context_make_gl(const gr_glinterface_t* glInterfa
 }
 
 // ===== Functions from include/gpu/GrDirectContext.h =====
+void gr_direct_context_delete(gr_direct_context_t* context) {
+    SK_ONLY_GPU(delete reinterpret_cast<GrDirectContext*>(context));
+}
+
 void gr_direct_context_abandon_context(gr_direct_context_t* context) {
     SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->abandonContext());
 }
