@@ -387,6 +387,10 @@ void gr_direct_context_abandon_context(gr_direct_context_t* context) {
     SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->abandonContext());
 }
 
+void gr_direct_context_release_resources_and_abandon_context(gr_direct_context_t* context) {
+    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->releaseResourcesAndAbandonContext());
+}
+
 // ===== Functions from include/gpu/gl/GrGLInterface.h =====
 const gr_glinterface_t* gr_glinterface_create_native_interface(void) {
     return SK_ONLY_GPU(reinterpret_cast<const gr_glinterface_t*>(GrGLMakeNativeInterface().release()), nullptr);
