@@ -395,6 +395,14 @@ void gr_direct_context_unref(const gr_direct_context_t* context) {
     SkSafeUnref(reinterpret_cast<const GrDirectContext*>(context));
 }
 
+void gr_direct_context_reset_gl_texture_bindings(gr_direct_context_t* context) {
+    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->resetGLTextureBindings());
+}
+
+void gr_direct_context_reset(gr_direct_context_t* context) {
+    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->resetContext());
+}
+
 // ===== Functions from include/gpu/gl/GrGLInterface.h =====
 const gr_glinterface_t* gr_glinterface_create_native_interface(void) {
     return SK_ONLY_GPU(reinterpret_cast<const gr_glinterface_t*>(GrGLMakeNativeInterface().release()), nullptr);
