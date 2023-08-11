@@ -1265,6 +1265,14 @@ void sk_path_effect_unref(sk_path_effect_t* effect) {
 }
 
 // ===== Functions from include/pathops/SkPathOps.h =====
+bool sk_path_op(const sk_path_t* path, const sk_path_t* other, sk_path_op_t op, sk_path_t *result) {
+    return Op(*reinterpret_cast<const SkPath*>(path), *reinterpret_cast<const SkPath*>(other), (SkPathOp)op, reinterpret_cast<SkPath*>(result));
+}
+
+bool sk_path_simplify(const sk_path_t* path, sk_path_t *result) {
+    return Simplify(*reinterpret_cast<const SkPath*>(path), reinterpret_cast<SkPath*>(result));
+}
+
 void sk_opbuilder_add(sk_op_builder_t* builder, const sk_path_t* path, sk_path_op_t op) {
     reinterpret_cast<SkOpBuilder*>(builder)->add(*reinterpret_cast<const SkPath*>(path), (SkPathOp)op);
 }
