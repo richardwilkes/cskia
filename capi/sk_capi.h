@@ -612,12 +612,13 @@ SK_C_API void gr_backendrendertarget_delete(gr_backendrendertarget_t* rendertarg
 SK_C_API gr_direct_context_t* gr_direct_context_make_gl(const gr_glinterface_t* glInterface);
 
 // ===== Functions from include/gpu/GrDirectContext.h =====
-SK_C_API void gr_direct_context_delete(gr_direct_context_t* context);
 SK_C_API void gr_direct_context_abandon_context(gr_direct_context_t* context);
+SK_C_API void gr_direct_context_delete(gr_direct_context_t* context);
+SK_C_API void gr_direct_context_flush_and_submit(gr_direct_context_t* context, bool syncCPU);
 SK_C_API void gr_direct_context_release_resources_and_abandon_context(gr_direct_context_t* context);
-SK_C_API void gr_direct_context_unref(const gr_direct_context_t* context);
-SK_C_API void gr_direct_context_reset_gl_texture_bindings(gr_direct_context_t* context);
 SK_C_API void gr_direct_context_reset(gr_direct_context_t* context);
+SK_C_API void gr_direct_context_reset_gl_texture_bindings(gr_direct_context_t* context);
+SK_C_API void gr_direct_context_unref(const gr_direct_context_t* context);
 
 // ===== Functions from include/gpu/gl/GrGLInterface.h =====
 SK_C_API const gr_glinterface_t* gr_glinterface_create_native_interface(void);
@@ -644,7 +645,6 @@ SK_C_API void sk_canvas_draw_rect(sk_canvas_t* canvas, const sk_rect_t* crect, c
 SK_C_API void sk_canvas_draw_round_rect(sk_canvas_t* canvas, const sk_rect_t* crect, float rx, float ry, const sk_paint_t* cpaint);
 SK_C_API void sk_canvas_draw_simple_text(sk_canvas_t* canvas, const void* text, size_t byte_length, sk_text_encoding_t encoding, float x, float y, const sk_font_t* cfont, const sk_paint_t* cpaint);
 SK_C_API void sk_canvas_draw_text_blob (sk_canvas_t* canvas, sk_text_blob_t* text, float x, float y, const sk_paint_t* paint);
-SK_C_API void sk_canvas_flush(sk_canvas_t* canvas);
 SK_C_API bool sk_canvas_get_local_clip_bounds(sk_canvas_t* canvas, sk_rect_t* cbounds);
 SK_C_API int sk_canvas_get_save_count(sk_canvas_t* canvas);
 SK_C_API void sk_canvas_get_total_matrix(sk_canvas_t* canvas, sk_matrix_t* matrix);
@@ -822,10 +822,12 @@ SK_C_API sk_path_t* sk_path_clone(const sk_path_t* cpath);
 SK_C_API void sk_path_close(sk_path_t* cpath);
 SK_C_API void sk_path_compute_tight_bounds(const sk_path_t* cpath, sk_rect_t* crect);
 SK_C_API void sk_path_conic_to(sk_path_t* cpath, float x0, float y0, float x1, float y1, float w);
-SK_C_API bool sk_path_contains (const sk_path_t* cpath, float x, float y);
+SK_C_API bool sk_path_contains(const sk_path_t* cpath, float x, float y);
+SK_C_API int sk_path_count_points(const sk_path_t* cpath);
 SK_C_API void sk_path_cubic_to(sk_path_t*, float x0, float y0, float x1, float y1, float x2, float y2);
 SK_C_API void sk_path_delete(sk_path_t* cpath);
 SK_C_API void sk_path_get_bounds(const sk_path_t* cpath, sk_rect_t* crect);
+SK_C_API int sk_path_get_points(const sk_path_t* cpath, sk_point_t* points, int max);
 SK_C_API sk_path_fill_type_t sk_path_get_filltype(sk_path_t *cpath);
 SK_C_API bool sk_path_get_last_point(const sk_path_t* cpath, sk_point_t* point);
 SK_C_API void sk_path_line_to(sk_path_t *cpath, float x, float y);

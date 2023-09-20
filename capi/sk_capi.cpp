@@ -379,28 +379,32 @@ gr_direct_context_t* gr_direct_context_make_gl(const gr_glinterface_t* glInterfa
 }
 
 // ===== Functions from include/gpu/GrDirectContext.h =====
+void gr_direct_context_abandon_context(gr_direct_context_t* context) {
+    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->abandonContext());
+}
+
 void gr_direct_context_delete(gr_direct_context_t* context) {
     SK_ONLY_GPU(delete reinterpret_cast<GrDirectContext*>(context));
 }
 
-void gr_direct_context_abandon_context(gr_direct_context_t* context) {
-    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->abandonContext());
+void gr_direct_context_flush_and_submit(gr_direct_context_t* context, bool syncCPU) {
+    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->flushAndSubmit(syncCPU));
 }
 
 void gr_direct_context_release_resources_and_abandon_context(gr_direct_context_t* context) {
     SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->releaseResourcesAndAbandonContext());
 }
 
-void gr_direct_context_unref(const gr_direct_context_t* context) {
-    SkSafeUnref(reinterpret_cast<const GrDirectContext*>(context));
+void gr_direct_context_reset(gr_direct_context_t* context) {
+    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->resetContext());
 }
 
 void gr_direct_context_reset_gl_texture_bindings(gr_direct_context_t* context) {
     SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->resetGLTextureBindings());
 }
 
-void gr_direct_context_reset(gr_direct_context_t* context) {
-    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->resetContext());
+void gr_direct_context_unref(const gr_direct_context_t* context) {
+    SkSafeUnref(reinterpret_cast<const GrDirectContext*>(context));
 }
 
 // ===== Functions from include/gpu/gl/GrGLInterface.h =====
@@ -495,10 +499,6 @@ void sk_canvas_draw_simple_text(sk_canvas_t* canvas, const void* text, size_t by
 
 void sk_canvas_draw_text_blob (sk_canvas_t* canvas, sk_text_blob_t* text, float x, float y, const sk_paint_t* cpaint) {
     reinterpret_cast<SkCanvas*>(canvas)->drawTextBlob(reinterpret_cast<SkTextBlob*>(text), x, y, *reinterpret_cast<const SkPaint*>(cpaint));
-}
-
-void sk_canvas_flush(sk_canvas_t* canvas) {
-    reinterpret_cast<SkCanvas*>(canvas)->flush();
 }
 
 bool sk_canvas_get_local_clip_bounds(sk_canvas_t* canvas, sk_rect_t* cbounds) {
@@ -1138,6 +1138,10 @@ bool sk_path_contains (const sk_path_t* cpath, float x, float y) {
     return reinterpret_cast<const SkPath*>(cpath)->contains(x, y);
 }
 
+int sk_path_count_points(const sk_path_t* cpath) {
+    return reinterpret_cast<const SkPath*>(cpath)->countPoints();
+}
+
 void sk_path_cubic_to(sk_path_t* cpath, float x0, float y0, float x1, float y1, float x2, float y2) {
     reinterpret_cast<SkPath*>(cpath)->cubicTo(x0, y0, x1, y1, x2, y2);
 }
@@ -1149,6 +1153,10 @@ void sk_path_delete(sk_path_t* cpath) {
 void sk_path_get_bounds(const sk_path_t* cpath, sk_rect_t* crect) {
     SkRect r = reinterpret_cast<const SkPath*>(cpath)->getBounds();
     *crect = reinterpret_cast<sk_rect_t&>(r);
+}
+
+int sk_path_get_points(const sk_path_t* cpath, sk_point_t* points, int max) {
+    return reinterpret_cast<const SkPath*>(cpath)->getPoints(reinterpret_cast<SkPoint*>(points), max);
 }
 
 sk_path_fill_type_t sk_path_get_filltype(sk_path_t *cpath) {
