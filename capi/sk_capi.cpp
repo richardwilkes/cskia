@@ -1,5 +1,12 @@
 #include "include/sk_capi.h"
 
+#include "include/codec/SkBmpDecoder.h"
+#include "include/codec/SkGifDecoder.h"
+#include "include/codec/SkIcoDecoder.h"
+#include "include/codec/SkJpegDecoder.h"
+#include "include/codec/SkPngDecoder.h"
+#include "include/codec/SkWbmpDecoder.h"
+#include "include/codec/SkWebpDecoder.h"
 #include "include/core/SkBlurTypes.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkColorSpace.h"
@@ -13,6 +20,7 @@
 #include "include/core/SkStream.h"
 #include "include/core/SkSurface.h"
 #include "include/core/SkTextBlob.h"
+#include "include/docs/SkPDFDocument.h"
 #include "include/effects/Sk1DPathEffect.h"
 #include "include/effects/Sk2DPathEffect.h"
 #include "include/effects/SkColorMatrixFilter.h"
@@ -30,44 +38,16 @@
 #include "include/encode/SkJpegEncoder.h"
 #include "include/encode/SkPngEncoder.h"
 #include "include/encode/SkWebpEncoder.h"
-#include "include/pathops/SkPathOps.h"
-#include "include/utils/SkParsePath.h"
-#include "include/docs/SkPDFDocument.h"
-#include "src/pdf/SkPDFDocumentPriv.h"
-
-#include "include/codec/SkBmpDecoder.h"
-#include "include/codec/SkGifDecoder.h"
-#include "include/codec/SkIcoDecoder.h"
-#include "include/codec/SkJpegDecoder.h"
-#include "include/codec/SkPngDecoder.h"
-#include "include/codec/SkWbmpDecoder.h"
-#include "include/codec/SkWebpDecoder.h"
-
-#define SK_SKIP_ARG__(keep, skip, ...) skip
-#define SK_SKIP_ARG_(args) SK_SKIP_ARG__ args
-#define SK_SKIP_ARG(...) SK_SKIP_ARG_((__VA_ARGS__, ))
-
-#define SK_FIRST_ARG__(keep, skip, ...) keep
-#define SK_FIRST_ARG_(args) SK_FIRST_ARG__ args
-#define SK_FIRST_ARG(...) SK_FIRST_ARG_((__VA_ARGS__, ))
-
-#if defined(SK_GANESH)
+#include "include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "include/gpu/ganesh/SkImageGanesh.h"
+#include "include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "include/gpu/gl/GrGLAssembleInterface.h"
 #include "include/gpu/GrBackendSurface.h"
 #include "include/gpu/GrContextOptions.h"
 #include "include/gpu/GrDirectContext.h"
-#include "include/gpu/gl/GrGLAssembleInterface.h"
-#include "include/gpu/ganesh/SkImageGanesh.h"
-#include "include/gpu/ganesh/SkSurfaceGanesh.h"
-#define SK_ONLY_GPU(...) SK_FIRST_ARG(__VA_ARGS__)
-#if SK_METAL
-#define SK_ONLY_METAL(...) SK_FIRST_ARG(__VA_ARGS__)
-#else // !SK_METAL
-#define SK_ONLY_METAL(...) SK_SKIP_ARG(__VA_ARGS__)
-#endif // SK_METAL
-#else // !SK_GANESH
-#define SK_ONLY_GPU(...) SK_SKIP_ARG(__VA_ARGS__)
-#define SK_ONLY_METAL(...) SK_SKIP_ARG(__VA_ARGS__)
-#endif // SK_GANESH
+#include "include/pathops/SkPathOps.h"
+#include "include/utils/SkParsePath.h"
+#include "src/pdf/SkPDFDocumentPriv.h"
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -76,11 +56,9 @@
 
 // ===== Verify enums =====
 
-#if defined(SK_GANESH)
 // gr_surface_origin_t
 static_assert((int)GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin    == (int)GR_SURFACE_ORIGIN_TOP_LEFT,    ASSERT_ENUM_MSG(GrSurfaceOrigin, gr_surface_origin_t));
 static_assert((int)GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin == (int)GR_SURFACE_ORIGIN_BOTTOM_LEFT, ASSERT_ENUM_MSG(GrSurfaceOrigin, gr_surface_origin_t));
-#endif // SK_GANESH
 
 // sk_alpha_type_t
 static_assert((int)SkAlphaType::kUnknown_SkAlphaType  == (int)SK_ALPHA_TYPE_UNKNOWN,  ASSERT_ENUM_MSG(SkAlphaType, sk_alpha_type_t));
@@ -317,11 +295,8 @@ static_assert((int)SkTileMode::kLastTileMode == (int)SK_TILE_LAST,       ASSERT_
 
 // ===== Verify structs =====
 
-#if defined(SK_GANESH)
-static_assert(sizeof(gr_gl_framebufferinfo_t) == sizeof(GrGLFramebufferInfo), ASSERT_STRUCT_MSG(GrGLFramebufferInfo, gr_gl_framebufferinfo_t));
-#endif // SK_GANESH
-
 // Note: sk_matrix_t and sk_image_info_t have been left out, since they require special handling
+static_assert(sizeof(gr_gl_framebufferinfo_t) == sizeof(GrGLFramebufferInfo), ASSERT_STRUCT_MSG(GrGLFramebufferInfo, gr_gl_framebufferinfo_t));
 static_assert(sizeof(sk_cubic_resampler_t) == sizeof(SkCubicResampler), ASSERT_STRUCT_MSG(SkCubicResampler, sk_cubic_resampler_t));
 static_assert(sizeof(sk_font_metrics_t) == sizeof(SkFontMetrics), ASSERT_STRUCT_MSG(SkFontMetrics, sk_font_metrics_t));
 static_assert(sizeof(sk_high_contrast_config_t) == sizeof(SkHighContrastConfig), ASSERT_STRUCT_MSG(SkHighContrastConfig, sk_high_contrast_config_t));
@@ -366,40 +341,41 @@ static inline SkImageInfo AsImageInfo(const sk_image_info_t* info) {
 
 // ===== Functions from include/gpu/GrBackendSurface.h =====
 gr_backendrendertarget_t* gr_backendrendertarget_new_gl(int width, int height, int samples, int stencils, const gr_gl_framebufferinfo_t* glInfo) {
-    return SK_ONLY_GPU(reinterpret_cast<gr_backendrendertarget_t*>(new GrBackendRenderTarget(width, height, samples, stencils, *reinterpret_cast<const GrGLFramebufferInfo*>(glInfo))), nullptr);
+    return reinterpret_cast<gr_backendrendertarget_t*>(new GrBackendRenderTarget(GrBackendRenderTargets::MakeGL(width, height,
+        samples, stencils, *reinterpret_cast<const GrGLFramebufferInfo*>(glInfo))));
 }
 
 void gr_backendrendertarget_delete(gr_backendrendertarget_t* rendertarget) {
-    SK_ONLY_GPU(delete reinterpret_cast<GrBackendRenderTarget*>(rendertarget));
+    delete reinterpret_cast<GrBackendRenderTarget*>(rendertarget);
 }
 
 gr_direct_context_t* gr_direct_context_make_gl(const gr_glinterface_t* glInterface) {
-    return SK_ONLY_GPU(reinterpret_cast<gr_direct_context_t *>(GrDirectContext::MakeGL(sk_ref_sp(reinterpret_cast<const GrGLInterface*>(glInterface))).release()), nullptr);
+    return reinterpret_cast<gr_direct_context_t *>(GrDirectContext::MakeGL(sk_ref_sp(reinterpret_cast<const GrGLInterface*>(glInterface))).release());
 }
 
 // ===== Functions from include/gpu/GrDirectContext.h =====
 void gr_direct_context_abandon_context(gr_direct_context_t* context) {
-    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->abandonContext());
+    reinterpret_cast<GrDirectContext*>(context)->abandonContext();
 }
 
 void gr_direct_context_delete(gr_direct_context_t* context) {
-    SK_ONLY_GPU(delete reinterpret_cast<GrDirectContext*>(context));
+    delete reinterpret_cast<GrDirectContext*>(context);
 }
 
 void gr_direct_context_flush_and_submit(gr_direct_context_t* context, bool syncCPU) {
-    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->flushAndSubmit(syncCPU));
+    reinterpret_cast<GrDirectContext*>(context)->flushAndSubmit(syncCPU);
 }
 
 void gr_direct_context_release_resources_and_abandon_context(gr_direct_context_t* context) {
-    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->releaseResourcesAndAbandonContext());
+    reinterpret_cast<GrDirectContext*>(context)->releaseResourcesAndAbandonContext();
 }
 
 void gr_direct_context_reset(gr_direct_context_t* context) {
-    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->resetContext());
+    reinterpret_cast<GrDirectContext*>(context)->resetContext();
 }
 
 void gr_direct_context_reset_gl_texture_bindings(gr_direct_context_t* context) {
-    SK_ONLY_GPU(reinterpret_cast<GrDirectContext*>(context)->resetGLTextureBindings());
+    reinterpret_cast<GrDirectContext*>(context)->resetGLTextureBindings();
 }
 
 void gr_direct_context_unref(const gr_direct_context_t* context) {
@@ -408,7 +384,7 @@ void gr_direct_context_unref(const gr_direct_context_t* context) {
 
 // ===== Functions from include/gpu/gl/GrGLInterface.h =====
 const gr_glinterface_t* gr_glinterface_create_native_interface(void) {
-    return SK_ONLY_GPU(reinterpret_cast<const gr_glinterface_t*>(GrGLMakeNativeInterface().release()), nullptr);
+    return reinterpret_cast<const gr_glinterface_t*>(GrGLMakeNativeInterface().release());
 }
 
 void gr_glinterface_unref(const gr_glinterface_t* intf) {
