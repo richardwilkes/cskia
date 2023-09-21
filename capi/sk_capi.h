@@ -395,23 +395,6 @@ typedef struct sk_image_filter_t sk_image_filter_t;
 
 typedef struct sk_mask_filter_t sk_mask_filter_t;
 
-// ===== Types from include/core/SkEncodedImageFormat.h =====
-
-typedef enum {
-    SK_ENCODED_FORMAT_BMP,
-    SK_ENCODED_FORMAT_GIF,
-    SK_ENCODED_FORMAT_ICO,
-    SK_ENCODED_FORMAT_JPEG,
-    SK_ENCODED_FORMAT_PNG,
-    SK_ENCODED_FORMAT_WBMP,
-    SK_ENCODED_FORMAT_WEBP,
-    SK_ENCODED_FORMAT_PKM,
-    SK_ENCODED_FORMAT_KTX,
-    SK_ENCODED_FORMAT_ASTC,
-    SK_ENCODED_FORMAT_DNG,
-    SK_ENCODED_FORMAT_HEIF,
-} sk_encoded_image_format_t;
-
 // ===== Types from include/core/SkColorFilter.h =====
 
 typedef struct sk_color_filter_t sk_color_filter_t;
@@ -673,7 +656,6 @@ SK_C_API sk_color_filter_t* sk_colorfilter_new_high_contrast(const sk_high_contr
 SK_C_API sk_color_filter_t* sk_colorfilter_new_lighting(sk_color_t mul, sk_color_t add);
 SK_C_API sk_color_filter_t* sk_colorfilter_new_luma_color(void);
 SK_C_API sk_color_filter_t* sk_colorfilter_new_mode(sk_color_t c, sk_blend_mode_t mode);
-SK_C_API sk_color_filter_t* sk_colorfilter_new_table_argb(const uint8_t tableA[256], const uint8_t tableR[256], const uint8_t tableG[256], const uint8_t tableB[256]);
 SK_C_API void sk_colorfilter_unref(sk_color_filter_t* filter);
 
 // ===== Functions from include/core/SkColorSpace.h =====
@@ -759,8 +741,8 @@ SK_C_API sk_image_filter_t* sk_imagefilter_new_drop_shadow(float dx, float dy, f
 SK_C_API sk_image_filter_t* sk_imagefilter_new_drop_shadow_only(float dx, float dy, float sigmaX, float sigmaY, sk_color_t color, sk_image_filter_t* input, const sk_rect_t* rect);
 SK_C_API sk_image_filter_t* sk_imagefilter_new_erode(int radiusX, int radiusY, sk_image_filter_t* input, const sk_rect_t* rect);
 SK_C_API sk_image_filter_t* sk_imagefilter_new_image_source(sk_image_t* image, const sk_rect_t* srcRect, const sk_rect_t* dstRect, const sk_sampling_options_t* samplingOptions);
-SK_C_API sk_image_filter_t* sk_imagefilter_new_image_source_default(sk_image_t* image);
-SK_C_API sk_image_filter_t* sk_imagefilter_new_magnifier(const sk_rect_t* src, float inset, sk_image_filter_t* input, const sk_rect_t* rect);
+SK_C_API sk_image_filter_t* sk_imagefilter_new_image_source_default(sk_image_t* image, const sk_sampling_options_t* samplingOptions);
+SK_C_API sk_image_filter_t* sk_imagefilter_new_magnifier(const sk_rect_t* lensBounds, float zoomAmount, float inset, const sk_sampling_options_t* samplingOptions, sk_image_filter_t* input, const sk_rect_t* rect);
 SK_C_API sk_image_filter_t* sk_imagefilter_new_matrix_convolution(const sk_isize_t* kernelSize, const float kernel[], float gain, float bias, const sk_ipoint_t* kernelOffset, sk_tile_mode_t tileMode, bool convolveAlpha, sk_image_filter_t* input, const sk_rect_t* rect);
 SK_C_API sk_image_filter_t* sk_imagefilter_new_matrix_transform(const sk_matrix_t* matrix, const sk_sampling_options_t *samplingOptions, sk_image_filter_t* input);
 SK_C_API sk_image_filter_t* sk_imagefilter_new_merge(sk_image_filter_t* filters[], int count, const sk_rect_t* rect);
@@ -901,7 +883,7 @@ SK_C_API size_t sk_string_get_size(const sk_string_t* str);
 
 // ===== Functions from include/core/SkSurface.h =====
 SK_C_API sk_surface_t* sk_surface_make_raster_direct(const sk_image_info_t *imageInfo, void *pixels, size_t rowBytes, sk_surface_props_t* surfaceProps);
-SK_C_API sk_surface_t* sk_surface_make_raster_n32_premul(int width, int height, sk_surface_props_t* surfaceProps);
+SK_C_API sk_surface_t* sk_surface_make_raster_n32_premul(const sk_image_info_t *imageInfo, sk_surface_props_t* surfaceProps);
 SK_C_API sk_image_t* sk_surface_make_image_snapshot(sk_surface_t* surface);
 SK_C_API sk_canvas_t* sk_surface_get_canvas(sk_surface_t* surface);
 SK_C_API sk_surface_t* sk_surface_new_backend_render_target(gr_direct_context_t* context, const gr_backendrendertarget_t* target, gr_surface_origin_t origin, sk_color_type_t colorType, sk_color_space_t* colorspace, const sk_surface_props_t* props);
@@ -954,6 +936,9 @@ SK_C_API void sk_document_abort(sk_document_t* doc);
 
 // ===== Functions from include/docs/SkPDFDocument.h =====
 SK_C_API sk_document_t* sk_document_make_pdf(sk_wstream_t* stream, sk_metadata_t* metadata);
+
+// ===== Functions from include/codec/SkCodec.h =====
+SK_C_API void register_image_codecs();
 
 #ifdef __cplusplus
 }

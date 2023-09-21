@@ -5,7 +5,6 @@
 #include "include/core/SkColorSpace.h"
 #include "include/core/SkData.h"
 #include "include/core/SkDocument.h"
-#include "include/core/SkEncodedImageFormat.h"
 #include "include/core/SkFontMetrics.h"
 #include "include/core/SkFontMgr.h"
 #include "include/core/SkMaskFilter.h"
@@ -26,7 +25,6 @@
 #include "include/effects/SkLumaColorFilter.h"
 #include "include/effects/SkPerlinNoiseShader.h"
 #include "include/effects/SkShaderMaskFilter.h"
-#include "include/effects/SkTableColorFilter.h"
 #include "include/effects/SkTableMaskFilter.h"
 #include "include/effects/SkTrimPathEffect.h"
 #include "include/encode/SkJpegEncoder.h"
@@ -37,6 +35,14 @@
 #include "include/docs/SkPDFDocument.h"
 #include "src/pdf/SkPDFDocumentPriv.h"
 
+#include "include/codec/SkBmpDecoder.h"
+#include "include/codec/SkGifDecoder.h"
+#include "include/codec/SkIcoDecoder.h"
+#include "include/codec/SkJpegDecoder.h"
+#include "include/codec/SkPngDecoder.h"
+#include "include/codec/SkWbmpDecoder.h"
+#include "include/codec/SkWebpDecoder.h"
+
 #define SK_SKIP_ARG__(keep, skip, ...) skip
 #define SK_SKIP_ARG_(args) SK_SKIP_ARG__ args
 #define SK_SKIP_ARG(...) SK_SKIP_ARG_((__VA_ARGS__, ))
@@ -46,10 +52,12 @@
 #define SK_FIRST_ARG(...) SK_FIRST_ARG_((__VA_ARGS__, ))
 
 #if defined(SK_GANESH)
+#include "include/gpu/GrBackendSurface.h"
 #include "include/gpu/GrContextOptions.h"
 #include "include/gpu/GrDirectContext.h"
 #include "include/gpu/gl/GrGLAssembleInterface.h"
 #include "include/gpu/ganesh/SkImageGanesh.h"
+#include "include/gpu/ganesh/SkSurfaceGanesh.h"
 #define SK_ONLY_GPU(...) SK_FIRST_ARG(__VA_ARGS__)
 #if SK_METAL
 #define SK_ONLY_METAL(...) SK_FIRST_ARG(__VA_ARGS__)
@@ -160,20 +168,6 @@ static_assert((int)SkColorType::kR16G16B16A16_unorm_SkColorType == (int)SK_COLOR
 static_assert((int)SkColorType::kSRGBA_8888_SkColorType         == (int)SK_COLOR_TYPE_SRGBA_8888,         ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR8_unorm_SkColorType           == (int)SK_COLOR_TYPE_R8_UNORM,           ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kLastEnum_SkColorType           == (int)SK_COLOR_TYPE_LAST,               ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
-
-// sk_encoded_image_format_t
-static_assert((int)SkEncodedImageFormat::kBMP == (int)SK_ENCODED_FORMAT_BMP, ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kGIF  == (int)SK_ENCODED_FORMAT_GIF,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kICO  == (int)SK_ENCODED_FORMAT_ICO,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kJPEG == (int)SK_ENCODED_FORMAT_JPEG, ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kPNG  == (int)SK_ENCODED_FORMAT_PNG,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kWBMP == (int)SK_ENCODED_FORMAT_WBMP, ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kWEBP == (int)SK_ENCODED_FORMAT_WEBP, ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kPKM  == (int)SK_ENCODED_FORMAT_PKM,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kKTX  == (int)SK_ENCODED_FORMAT_KTX,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kASTC == (int)SK_ENCODED_FORMAT_ASTC, ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kDNG  == (int)SK_ENCODED_FORMAT_DNG,  ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
-static_assert((int)SkEncodedImageFormat::kHEIF == (int)SK_ENCODED_FORMAT_HEIF, ASSERT_ENUM_MSG(SkEncodedImageFormat, sk_encoded_image_format_t));
 
 // sk_filter_mode_t
 static_assert((int)SkFilterMode::kNearest == (int)SK_FILTER_MODE_NEAREST, ASSERT_ENUM_MSG(SkFilterMode, sk_filter_mode_t));
@@ -603,10 +597,6 @@ sk_color_filter_t* sk_colorfilter_new_mode(sk_color_t c, sk_blend_mode_t cmode) 
     return reinterpret_cast<sk_color_filter_t*>(SkColorFilters::Blend(c, (SkBlendMode)cmode).release());
 }
 
-sk_color_filter_t* sk_colorfilter_new_table_argb(const uint8_t tableA[256], const uint8_t tableR[256], const uint8_t tableG[256], const uint8_t tableB[256]) {
-    return reinterpret_cast<sk_color_filter_t*>(SkTableColorFilter::MakeARGB(tableA, tableR, tableG, tableB).release());
-}
-
 void sk_colorfilter_unref(sk_color_filter_t* filter) {
     SkSafeUnref(reinterpret_cast<SkColorFilter*>(filter));
 }
@@ -879,12 +869,14 @@ sk_image_filter_t* sk_imagefilter_new_image_source(sk_image_t* image, const sk_r
     return reinterpret_cast<sk_image_filter_t*>(SkImageFilters::Image(sk_ref_sp(reinterpret_cast<SkImage*>(image)), *reinterpret_cast<const SkRect*>(srcRect), *reinterpret_cast<const SkRect*>(dstRect), *reinterpret_cast<const SkSamplingOptions*>(samplingOptions)).release());
 }
 
-sk_image_filter_t* sk_imagefilter_new_image_source_default(sk_image_t* image) {
-    return reinterpret_cast<sk_image_filter_t*>(SkImageFilters::Image(sk_ref_sp(reinterpret_cast<SkImage*>(image))).release());
+sk_image_filter_t* sk_imagefilter_new_image_source_default(sk_image_t* image, const sk_sampling_options_t* samplingOptions) {
+    return reinterpret_cast<sk_image_filter_t*>(SkImageFilters::Image(sk_ref_sp(reinterpret_cast<SkImage*>(image)), *reinterpret_cast<const SkSamplingOptions*>(samplingOptions)).release());
 }
 
-sk_image_filter_t* sk_imagefilter_new_magnifier(const sk_rect_t* src, float inset, sk_image_filter_t* input, const sk_rect_t* rect) {
-    return reinterpret_cast<sk_image_filter_t*>(SkImageFilters::Magnifier(*reinterpret_cast<const SkRect*>(src), inset, sk_ref_sp(reinterpret_cast<SkImageFilter*>(input)), *reinterpret_cast<const SkRect*>(rect)).release());
+sk_image_filter_t* sk_imagefilter_new_magnifier(const sk_rect_t* lensBounds, float zoomAmount, float inset, const sk_sampling_options_t* samplingOptions, sk_image_filter_t* input, const sk_rect_t* rect) {
+    return reinterpret_cast<sk_image_filter_t*>(SkImageFilters::Magnifier(*reinterpret_cast<const SkRect*>(lensBounds),
+        zoomAmount, inset, *reinterpret_cast<const SkSamplingOptions*>(samplingOptions),
+        sk_ref_sp(reinterpret_cast<SkImageFilter*>(input)), *reinterpret_cast<const SkRect*>(rect)).release());
 }
 
 sk_image_filter_t* sk_imagefilter_new_matrix_convolution(const sk_isize_t* kernelSize, const float kernel[], float gain, float bias, const sk_ipoint_t* kernelOffset, sk_tile_mode_t ctileMode, bool convolveAlpha, sk_image_filter_t* input, const sk_rect_t* rect) {
@@ -1341,11 +1333,11 @@ sk_shader_t* sk_shader_new_linear_gradient(const sk_point_t points[2], const sk_
 }
 
 sk_shader_t* sk_shader_new_perlin_noise_fractal_noise(float baseFrequencyX, float baseFrequencyY, int numOctaves, float seed, const sk_isize_t* tileSize) {
-    return reinterpret_cast<sk_shader_t*>(SkPerlinNoiseShader::MakeFractalNoise(baseFrequencyX, baseFrequencyY, numOctaves, seed, reinterpret_cast<const SkISize*>(tileSize)).release());
+    return reinterpret_cast<sk_shader_t*>(SkShaders::MakeFractalNoise(baseFrequencyX, baseFrequencyY, numOctaves, seed, reinterpret_cast<const SkISize*>(tileSize)).release());
 }
 
 sk_shader_t* sk_shader_new_perlin_noise_turbulence(float baseFrequencyX, float baseFrequencyY, int numOctaves, float seed, const sk_isize_t* tileSize) {
-    return reinterpret_cast<sk_shader_t*>(SkPerlinNoiseShader::MakeTurbulence(baseFrequencyX, baseFrequencyY,  numOctaves,  seed,  reinterpret_cast<const SkISize*>(tileSize)).release());
+    return reinterpret_cast<sk_shader_t*>(SkShaders::MakeTurbulence(baseFrequencyX, baseFrequencyY,  numOctaves,  seed,  reinterpret_cast<const SkISize*>(tileSize)).release());
 }
 
 sk_shader_t* sk_shader_new_radial_gradient(const sk_point_t* center, float radius, const sk_color_t colors[], const float colorPos[], int colorCount, sk_tile_mode_t tileMode, const sk_matrix_t* localMatrix) {
@@ -1407,11 +1399,11 @@ size_t sk_string_get_size(const sk_string_t* cstring) {
 
 // ===== Functions from include/core/SkSurface.h =====
 sk_surface_t* sk_surface_make_raster_direct(const sk_image_info_t *imageInfo, void *pixels, size_t rowBytes, sk_surface_props_t* surfaceProps) {
-	return reinterpret_cast<sk_surface_t*>(SkSurface::MakeRasterDirect(*reinterpret_cast<const SkImageInfo *>(imageInfo), pixels, rowBytes, reinterpret_cast<const SkSurfaceProps*>(surfaceProps)).release());
+	return reinterpret_cast<sk_surface_t*>(SkSurfaces::WrapPixels(*reinterpret_cast<const SkImageInfo *>(imageInfo), pixels, rowBytes, reinterpret_cast<const SkSurfaceProps*>(surfaceProps)).release());
 }
 
-sk_surface_t* sk_surface_make_raster_n32_premul(int width, int height, sk_surface_props_t* surfaceProps) {
-	return reinterpret_cast<sk_surface_t*>(SkSurface::MakeRasterN32Premul(width, height, reinterpret_cast<const SkSurfaceProps*>(surfaceProps)).release());
+sk_surface_t* sk_surface_make_raster_n32_premul(const sk_image_info_t *imageInfo, sk_surface_props_t* surfaceProps) {
+	return reinterpret_cast<sk_surface_t*>(SkSurfaces::Raster(*reinterpret_cast<const SkImageInfo *>(imageInfo), reinterpret_cast<const SkSurfaceProps*>(surfaceProps)).release());
 }
 
 sk_canvas_t* sk_surface_get_canvas(sk_surface_t* surface) {
@@ -1419,7 +1411,9 @@ sk_canvas_t* sk_surface_get_canvas(sk_surface_t* surface) {
 }
 
 sk_surface_t* sk_surface_new_backend_render_target(gr_direct_context_t* context, const gr_backendrendertarget_t* target, gr_surface_origin_t origin, sk_color_type_t colorType, sk_color_space_t* colorspace, const sk_surface_props_t* props) {
-    return reinterpret_cast<sk_surface_t*>(SkSurface::MakeFromBackendRenderTarget(reinterpret_cast<GrDirectContext*>(context), *reinterpret_cast<const GrBackendRenderTarget*>(target), (GrSurfaceOrigin)origin, (SkColorType)colorType, sk_ref_sp(reinterpret_cast<SkColorSpace*>(colorspace)), reinterpret_cast<const SkSurfaceProps*>(props)).release());
+    return reinterpret_cast<sk_surface_t*>(SkSurfaces::WrapBackendRenderTarget(reinterpret_cast<GrDirectContext*>(context),
+        *reinterpret_cast<const GrBackendRenderTarget*>(target), (GrSurfaceOrigin)origin, (SkColorType)colorType,
+        sk_ref_sp(reinterpret_cast<SkColorSpace*>(colorspace)), reinterpret_cast<const SkSurfaceProps*>(props)).release());
 }
 
 sk_image_t* sk_surface_make_image_snapshot(sk_surface_t* surface) {
@@ -1605,4 +1599,16 @@ sk_document_t* sk_document_make_pdf(sk_wstream_t* stream, sk_metadata_t* metadat
 	md.fRasterDPI = metadata->rasterDPI;
 	md.fEncodingQuality = metadata->encodingQuality;
 	return reinterpret_cast<sk_document_t*>(new SkPDFDocument(reinterpret_cast<SkWStream*>(stream), md));
+}
+
+// ===== Functions from include/codec/SkCodec.h =====
+
+void register_image_codecs() {
+    SkCodecs::Register(SkPngDecoder::Decoder());
+    SkCodecs::Register(SkJpegDecoder::Decoder());
+    SkCodecs::Register(SkWebpDecoder::Decoder());
+    SkCodecs::Register(SkGifDecoder::Decoder());
+    SkCodecs::Register(SkIcoDecoder::Decoder());
+    SkCodecs::Register(SkBmpDecoder::Decoder());
+    SkCodecs::Register(SkWbmpDecoder::Decoder());
 }

@@ -4,7 +4,7 @@ set -eo pipefail
 # These two variables should be set in tandem to keep a consistent set of sources.
 # Last set Wed Sep 20 14:56:42 PDT 2023
 DEPOT_TOOLS_COMMIT=7eb4e4841f43a5ad3e00ee96c2bc58df5cefd0be
-SKIA_BRANCH=chrome/m115
+SKIA_BRANCH=chrome/m116
 
 for arg in "$@"
 do
