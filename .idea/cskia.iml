@@ -4,8 +4,35 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/skia" />
-      <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/build" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/depot_tools" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/bazel" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/bench" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/build" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/build_overrides" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/buildtools" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/client_utils" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/demos.skia.org" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/dm" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/docker" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/docs" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/example" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/experimental" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/fuzz" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/gm" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/gn" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/infra" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/modules" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/platform_tools" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/relnotes" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/resources" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/site" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/specs" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/tests" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/third_party" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/toolchain" />
+      <excludeFolder url="file://$MODULE_DIR$/skia/skia/tools" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
