@@ -2,9 +2,9 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set Sat Dec 17 10:01:14 PDT 2022
-DEPOT_TOOLS_COMMIT=5decb175432cb284b6f8ee102dc1b908b58d8e41
-SKIA_BRANCH=chrome/m110
+# Last set Wed Sep 20 14:56:42 PDT 2023
+DEPOT_TOOLS_COMMIT=7eb4e4841f43a5ad3e00ee96c2bc58df5cefd0be
+SKIA_BRANCH=chrome/m114
 
 for arg in "$@"
 do
@@ -54,7 +54,6 @@ DIST=${PWD}/dist
 
 # As changes to Skia are made, these args may need to be adjusted.
 # Use 'bin/gn args $BUILD_DIR --list' to see what args are available.
-# Note: Turned off skia_use_libheif since having it on did not allow .heif files to be loaded...
 COMMON_ARGS=" \
   is_debug=false \
   is_official_build=true \
@@ -65,7 +64,6 @@ COMMON_ARGS=" \
   skia_enable_fontmgr_fuchsia=false \
   skia_enable_fontmgr_win_gdi=false \
   skia_enable_gpu=true \
-  skia_enable_particles=true \
   skia_enable_pdf=true \
   skia_enable_skottie=false \
   skia_enable_skshaper=true \
@@ -105,7 +103,7 @@ Darwin*)
   case $(uname -m) in
   x86_64*)
     UNISON_LIB_NAME=libskia_darwin_amd64.a
-    export MACOSX_DEPLOYMENT_TARGET=10.14
+    export MACOSX_DEPLOYMENT_TARGET=10.15
     ;;
   arm*)
     UNISON_LIB_NAME=libskia_darwin_arm64.a
@@ -119,9 +117,6 @@ Darwin*)
       skia_use_fontconfig=false \
       skia_use_freetype=false \
       skia_use_x11=false \
-      extra_cflags=[ \
-        \"-mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}\" \
-      ] \
       extra_cflags_cc=[ \
         \"-DHAVE_XLOCALE_H\" \
       ] \

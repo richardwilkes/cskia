@@ -29,6 +29,9 @@
 #include "include/effects/SkTableColorFilter.h"
 #include "include/effects/SkTableMaskFilter.h"
 #include "include/effects/SkTrimPathEffect.h"
+#include "include/encode/SkJpegEncoder.h"
+#include "include/encode/SkPngEncoder.h"
+#include "include/encode/SkWebpEncoder.h"
 #include "include/pathops/SkPathOps.h"
 #include "include/utils/SkParsePath.h"
 #include "include/docs/SkPDFDocument.h"
@@ -42,20 +45,21 @@
 #define SK_FIRST_ARG_(args) SK_FIRST_ARG__ args
 #define SK_FIRST_ARG(...) SK_FIRST_ARG_((__VA_ARGS__, ))
 
-#if SK_SUPPORT_GPU
+#if defined(SK_GANESH)
 #include "include/gpu/GrContextOptions.h"
 #include "include/gpu/GrDirectContext.h"
 #include "include/gpu/gl/GrGLAssembleInterface.h"
+#include "include/gpu/ganesh/SkImageGanesh.h"
 #define SK_ONLY_GPU(...) SK_FIRST_ARG(__VA_ARGS__)
 #if SK_METAL
 #define SK_ONLY_METAL(...) SK_FIRST_ARG(__VA_ARGS__)
 #else // !SK_METAL
 #define SK_ONLY_METAL(...) SK_SKIP_ARG(__VA_ARGS__)
 #endif // SK_METAL
-#else // !SK_SUPPORT_GPU
+#else // !SK_GANESH
 #define SK_ONLY_GPU(...) SK_SKIP_ARG(__VA_ARGS__)
 #define SK_ONLY_METAL(...) SK_SKIP_ARG(__VA_ARGS__)
-#endif // SK_SUPPORT_GPU
+#endif // SK_GANESH
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -64,11 +68,11 @@
 
 // ===== Verify enums =====
 
-#if SK_SUPPORT_GPU
+#if defined(SK_GANESH)
 // gr_surface_origin_t
 static_assert((int)GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin    == (int)GR_SURFACE_ORIGIN_TOP_LEFT,    ASSERT_ENUM_MSG(GrSurfaceOrigin, gr_surface_origin_t));
 static_assert((int)GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin == (int)GR_SURFACE_ORIGIN_BOTTOM_LEFT, ASSERT_ENUM_MSG(GrSurfaceOrigin, gr_surface_origin_t));
-#endif // SK_SUPPORT_GPU
+#endif // SK_GANESH
 
 // sk_alpha_type_t
 static_assert((int)SkAlphaType::kUnknown_SkAlphaType  == (int)SK_ALPHA_TYPE_UNKNOWN,  ASSERT_ENUM_MSG(SkAlphaType, sk_alpha_type_t));
@@ -142,6 +146,7 @@ static_assert((int)SkColorType::kRGBA_1010102_SkColorType       == (int)SK_COLOR
 static_assert((int)SkColorType::kBGRA_1010102_SkColorType       == (int)SK_COLOR_TYPE_BGRA_1010102,       ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGB_101010x_SkColorType        == (int)SK_COLOR_TYPE_RGB_101010X,        ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kBGR_101010x_SkColorType        == (int)SK_COLOR_TYPE_BGR_101010X,        ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kBGR_101010x_XR_SkColorType     == (int)SK_COLOR_TYPE_BGR_101010X_XR,     ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kGray_8_SkColorType             == (int)SK_COLOR_TYPE_GRAY_8,             ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGBA_F16Norm_SkColorType       == (int)SK_COLOR_TYPE_RGBA_F16_NORM,      ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGBA_F16_SkColorType           == (int)SK_COLOR_TYPE_RGBA_F16,           ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
@@ -318,9 +323,9 @@ static_assert((int)SkTileMode::kLastTileMode == (int)SK_TILE_LAST,       ASSERT_
 
 // ===== Verify structs =====
 
-#if SK_SUPPORT_GPU
+#if defined(SK_GANESH)
 static_assert(sizeof(gr_gl_framebufferinfo_t) == sizeof(GrGLFramebufferInfo), ASSERT_STRUCT_MSG(GrGLFramebufferInfo, gr_gl_framebufferinfo_t));
-#endif // SK_SUPPORT_GPU
+#endif // SK_GANESH
 
 // Note: sk_matrix_t and sk_image_info_t have been left out, since they require special handling
 static_assert(sizeof(sk_cubic_resampler_t) == sizeof(SkCubicResampler), ASSERT_STRUCT_MSG(SkCubicResampler, sk_cubic_resampler_t));
@@ -628,6 +633,29 @@ void sk_data_unref(const sk_data_t* cdata) {
     SkSafeUnref(reinterpret_cast<const SkData*>(cdata));
 }
 
+// ===== Functions from include/encode/SkJpegEncoder.h =====
+sk_data_t* sk_encode_jpeg(gr_direct_context_t* ctx, const sk_image_t* img, int quality) {
+    SkJpegEncoder::Options options;
+    options.fQuality = quality;
+    return reinterpret_cast<sk_data_t*>(SkJpegEncoder::Encode(reinterpret_cast<GrDirectContext*>(ctx), reinterpret_cast<const SkImage*>(img), options).release());
+}
+
+// ===== Functions from include/encode/SkPngEncoder.h =====
+sk_data_t* sk_encode_png(gr_direct_context_t* ctx, const sk_image_t* img, int compressionLevel) {
+    SkPngEncoder::Options options;
+    options.fFilterFlags = SkPngEncoder::FilterFlag::kAll;
+    options.fZLibLevel = compressionLevel;
+    return reinterpret_cast<sk_data_t*>(SkPngEncoder::Encode(reinterpret_cast<GrDirectContext*>(ctx), reinterpret_cast<const SkImage*>(img), options).release());
+}
+
+// ===== Functions from include/encode/SkWebpEncoder.h =====
+sk_data_t* sk_encode_webp(gr_direct_context_t* ctx, const sk_image_t* img, float quality, bool lossy) {
+    SkWebpEncoder::Options options;
+    options.fCompression = lossy ? SkWebpEncoder::Compression::kLossy : SkWebpEncoder::Compression::kLossless;
+    options.fQuality = quality;
+    return reinterpret_cast<sk_data_t*>(SkWebpEncoder::Encode(reinterpret_cast<GrDirectContext*>(ctx), reinterpret_cast<const SkImage*>(img), options).release());
+}
+
 // ===== Functions from include/core/SkFont.h =====
 void sk_font_delete(sk_font_t* font) {
     delete reinterpret_cast<SkFont*>(font);
@@ -691,15 +719,15 @@ void sk_fontmgr_get_family_name(sk_font_mgr_t* fontmgr, int index, sk_string_t* 
 }
 
 sk_font_style_set_t* sk_fontmgr_match_family(sk_font_mgr_t* fontmgr, const char* familyName) {
-    return reinterpret_cast<sk_font_style_set_t*>(reinterpret_cast<SkFontMgr*>(fontmgr)->matchFamily(familyName));
+    return reinterpret_cast<sk_font_style_set_t*>(reinterpret_cast<SkFontMgr*>(fontmgr)->matchFamily(familyName).release());
 }
 
 sk_typeface_t* sk_fontmgr_match_family_style(sk_font_mgr_t* fontmgr, const char* familyName, sk_font_style_t* style) {
-    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontMgr*>(fontmgr)->matchFamilyStyle(familyName, *reinterpret_cast<SkFontStyle*>(style)));
+    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontMgr*>(fontmgr)->matchFamilyStyle(familyName, *reinterpret_cast<SkFontStyle*>(style)).release());
 }
 
 sk_typeface_t* sk_fontmgr_match_family_style_character(sk_font_mgr_t* fontmgr, const char familyName[], sk_font_style_t* style, const char** bcp47, int bcp47Count, int32_t character) {
-    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontMgr*>(fontmgr)->matchFamilyStyleCharacter(familyName, *reinterpret_cast<SkFontStyle*>(style), bcp47, bcp47Count, character));
+    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontMgr*>(fontmgr)->matchFamilyStyleCharacter(familyName, *reinterpret_cast<SkFontStyle*>(style), bcp47, bcp47Count, character).release());
 }
 
 sk_font_mgr_t* sk_fontmgr_ref_default(void) {
@@ -707,7 +735,7 @@ sk_font_mgr_t* sk_fontmgr_ref_default(void) {
 }
 
 sk_typeface_t* sk_fontstyleset_create_typeface(sk_font_style_set_t* fss, int index) {
-    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontStyleSet*>(fss)->createTypeface(index));
+    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontStyleSet*>(fss)->createTypeface(index).release());
 }
 
 int sk_fontstyleset_get_count(sk_font_style_set_t* fss) {
@@ -719,7 +747,7 @@ void sk_fontstyleset_get_style(sk_font_style_set_t* fss, int index, sk_font_styl
 }
 
 sk_typeface_t* sk_fontstyleset_match_style(sk_font_style_set_t* fss, sk_font_style_t* style) {
-    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontStyleSet*>(fss)->matchStyle(*reinterpret_cast<SkFontStyle*>(style)));
+    return reinterpret_cast<sk_typeface_t*>(reinterpret_cast<SkFontStyleSet*>(fss)->matchStyle(*reinterpret_cast<SkFontStyle*>(style)).release());
 }
 
 void sk_fontstyleset_unref(sk_font_style_set_t* fss) {
@@ -748,10 +776,6 @@ sk_font_style_t* sk_fontstyle_new(int weight, int width, sk_font_style_slant_t s
 }
 
 // ===== Functions from include/core/SkImage.h =====
-sk_data_t* sk_image_encode_specific(const sk_image_t* cimage, sk_encoded_image_format_t encoder, int quality) {
-    return reinterpret_cast<sk_data_t*>(reinterpret_cast<const SkImage*>(cimage)->encodeToData((SkEncodedImageFormat)encoder, quality).release());
-}
-
 sk_alpha_type_t sk_image_get_alpha_type(const sk_image_t* image) {
     return (sk_alpha_type_t)reinterpret_cast<const SkImage*>(image)->alphaType();
 }
@@ -784,16 +808,12 @@ sk_shader_t* sk_image_make_shader(const sk_image_t* image, sk_tile_mode_t tileX,
     return reinterpret_cast<sk_shader_t*>(reinterpret_cast<const SkImage*>(image)->makeShader((SkTileMode)tileX, (SkTileMode)tileY, *reinterpret_cast<const SkSamplingOptions*>(samplingOptions), cmatrix ? &m : nullptr).release());
 }
 
-sk_image_t* sk_image_make_texture_image(const sk_image_t* image, gr_direct_context_t* context, bool mipmapped) {
-    return reinterpret_cast<sk_image_t*>(reinterpret_cast<const SkImage*>(image)->makeTextureImage(reinterpret_cast<GrDirectContext*>(context), (GrMipMapped)mipmapped).release());
-}
-
 sk_image_t* sk_image_new_from_encoded(sk_data_t* cdata) {
-    return reinterpret_cast<sk_image_t*>(SkImage::MakeFromEncoded(sk_ref_sp(reinterpret_cast<SkData*>(cdata))).release());
+    return reinterpret_cast<sk_image_t*>(SkImages::DeferredFromEncodedData(sk_ref_sp(reinterpret_cast<SkData*>(cdata)), std::nullopt).release());
 }
 
 sk_image_t* sk_image_new_raster_data(const sk_image_info_t* cinfo, sk_data_t* pixels, size_t rowBytes) {
-    return reinterpret_cast<sk_image_t*>(SkImage::MakeRasterData(AsImageInfo(cinfo), sk_ref_sp(reinterpret_cast<SkData*>(pixels)), rowBytes).release());
+    return reinterpret_cast<sk_image_t*>(SkImages::RasterFromData(AsImageInfo(cinfo), sk_ref_sp(reinterpret_cast<SkData*>(pixels)), rowBytes).release());
 }
 
 bool sk_image_read_pixels(const sk_image_t* image, const sk_image_info_t* dstInfo, void* dstPixels, size_t dstRowBytes, int srcX, int srcY, sk_image_caching_hint_t cachingHint) {
@@ -802,6 +822,12 @@ bool sk_image_read_pixels(const sk_image_t* image, const sk_image_info_t* dstInf
 
 void sk_image_unref(const sk_image_t* cimage) {
     SkSafeUnref(reinterpret_cast<const SkImage*>(cimage));
+}
+
+// ===== Functions from include/gpu/ganesh/SkImageGanesh.h =====
+sk_image_t* sk_image_texture_from_image(gr_direct_context_t* ctx, const sk_image_t* image, bool mipmapped, bool budgeted) {
+    return reinterpret_cast<sk_image_t*>(SkImages::TextureFromImage(reinterpret_cast<GrDirectContext*>(ctx),
+        reinterpret_cast<const SkImage*>(image), (skgpu::Mipmapped)mipmapped, (skgpu::Budgeted)budgeted).release());
 }
 
 // ===== Functions from include/core/SkImageFilter.h =====
