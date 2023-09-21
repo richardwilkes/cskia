@@ -193,6 +193,7 @@ typedef enum {
 typedef struct {
     unsigned int fFBOID;
     unsigned int fFormat;
+    bool         fProtected;
 } gr_gl_framebufferinfo_t;
 
 // ===== Types from include/gpu/GrDirectContext.h =====
