@@ -1431,6 +1431,11 @@ sk_surface_t* sk_surface_make_raster_n32_premul(const sk_image_info_t *imageInfo
 	return reinterpret_cast<sk_surface_t*>(SkSurfaces::Raster(*reinterpret_cast<const SkImageInfo *>(imageInfo), reinterpret_cast<const SkSurfaceProps*>(surfaceProps)).release());
 }
 
+sk_surface_t* sk_surface_make_surface(sk_surface_t *surface, int width, int height)
+{
+    return reinterpret_cast<sk_surface_t *>(reinterpret_cast<SkSurface *>(surface)->makeSurface(width, height).release());
+}
+
 sk_canvas_t* sk_surface_get_canvas(sk_surface_t* surface) {
     return reinterpret_cast<sk_canvas_t*>(reinterpret_cast<SkSurface*>(surface)->getCanvas());
 }
