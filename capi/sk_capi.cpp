@@ -1459,6 +1459,12 @@ sk_surface_props_t* sk_surfaceprops_new(uint32_t flags, sk_pixel_geometry_t geom
     return reinterpret_cast<sk_surface_props_t*>(new SkSurfaceProps(flags, (SkPixelGeometry)geometry));
 }
 
+void sk_surfaceprops_delete(sk_surface_props_t *surface_props)
+{
+    delete reinterpret_cast<SkSurfaceProps *>(surface_props);
+}
+
+
 // ===== Functions from include/core/SkTextBlob.h =====
 const sk_text_blob_builder_run_buffer_t* sk_textblob_builder_alloc_run(sk_text_blob_builder_t* builder, const sk_font_t* font, int count, float x, float y, const sk_rect_t* bounds) {
     return &reinterpret_cast<const sk_text_blob_builder_run_buffer_t&>(reinterpret_cast<SkTextBlobBuilder*>(builder)->allocRun(reinterpret_cast<const SkFont&>(*font), count, x, y, reinterpret_cast<const SkRect*>(bounds)));
