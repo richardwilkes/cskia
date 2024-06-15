@@ -4,8 +4,8 @@ These have been tailored to the needs of my specific projects and may not be sui
 
 ## Skia version
 
-The Skia version with which these bindings have been tested is from _Wed Sep 20 22:29:42 PDT 2023_
-* https://github.com/google/skia/tree/chrome/m118
-* https://chromium.googlesource.com/chromium/tools/depot_tools.git/+/a45d2d4c9058c5b7ba81756dc1047f3981aa43ba
+The Skia version with which these bindings have been tested is from _Sat Jun 15 11:00:00 PDT 2024_
+* https://github.com/google/skia/tree/chrome/m127
+* https://chromium.googlesource.com/chromium/tools/depot_tools.git/+/1d1f17af898bc5158fb1128952894ac061b06f56
 
 See the file skia/skia/RELEASE_NOTES.txt for changes made to skia.

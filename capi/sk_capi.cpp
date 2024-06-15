@@ -39,6 +39,7 @@
 #include "include/encode/SkPngEncoder.h"
 #include "include/encode/SkWebpEncoder.h"
 #include "include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "include/gpu/ganesh/SkImageGanesh.h"
 #include "include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "include/gpu/gl/GrGLAssembleInterface.h"
@@ -48,6 +49,18 @@
 #include "include/pathops/SkPathOps.h"
 #include "include/utils/SkParsePath.h"
 #include "src/pdf/SkPDFDocumentPriv.h"
+
+#if defined(SK_BUILD_FOR_MAC)
+#include "include/ports/SkFontMgr_mac_ct.h"
+#endif
+
+#if defined(SK_FONTMGR_FONTCONFIG_AVAILABLE)
+#include "include/ports/SkFontMgr_fontconfig.h"
+#endif
+
+#if defined(SK_BUILD_FOR_WIN)
+#include "include/ports/SkTypeface_win.h"
+#endif
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -350,7 +363,7 @@ void gr_backendrendertarget_delete(gr_backendrendertarget_t* rendertarget) {
 }
 
 gr_direct_context_t* gr_direct_context_make_gl(const gr_glinterface_t* glInterface) {
-    return reinterpret_cast<gr_direct_context_t *>(GrDirectContext::MakeGL(sk_ref_sp(reinterpret_cast<const GrGLInterface*>(glInterface))).release());
+    return reinterpret_cast<gr_direct_context_t *>(GrDirectContexts::MakeGL(sk_ref_sp(reinterpret_cast<const GrGLInterface*>(glInterface))).release());
 }
 
 // ===== Functions from include/gpu/GrDirectContext.h =====
@@ -363,7 +376,7 @@ void gr_direct_context_delete(gr_direct_context_t* context) {
 }
 
 void gr_direct_context_flush_and_submit(gr_direct_context_t* context, bool syncCPU) {
-    reinterpret_cast<GrDirectContext*>(context)->flushAndSubmit(syncCPU);
+    reinterpret_cast<GrDirectContext*>(context)->flushAndSubmit(syncCPU ? GrSyncCpu::kYes : GrSyncCpu::kNo);
 }
 
 void gr_direct_context_release_resources_and_abandon_context(gr_direct_context_t* context) {
@@ -697,7 +710,15 @@ sk_typeface_t* sk_fontmgr_match_family_style_character(sk_font_mgr_t* fontmgr, c
 }
 
 sk_font_mgr_t* sk_fontmgr_ref_default(void) {
-    return reinterpret_cast<sk_font_mgr_t*>(SkFontMgr::RefDefault().release());
+#if defined(SK_BUILD_FOR_MAC)
+	return reinterpret_cast<sk_font_mgr_t*>(SkFontMgr_New_CoreText(nullptr).release());
+#elif defined(SK_BUILD_FOR_WIN)
+	return reinterpret_cast<sk_font_mgr_t*>(SkFontMgr_New_DirectWrite().release());
+#elif defined(SK_FONTMGR_FONTCONFIG_AVAILABLE)
+	return reinterpret_cast<sk_font_mgr_t*>(SkFontMgr_New_FontConfig(nullptr).release());
+#else
+	#error "No font manager available for this platform"
+#endif
 }
 
 sk_typeface_t* sk_fontstyleset_create_typeface(sk_font_style_set_t* fss, int index) {
@@ -1599,7 +1620,7 @@ void sk_document_abort(sk_document_t* doc) {
 
 // ===== Functions from include/docs/SkPDFDocument.h =====
 
-static void sk_convertDateTime(SkTime::DateTime* to, sk_date_time_t* from) {
+static void sk_convertDateTime(SkPDF::DateTime* to, sk_date_time_t* from) {
 	to->fTimeZoneMinutes = from->timeZoneMinutes;
 	to->fYear = from->year;
 	to->fMonth = from->month;
