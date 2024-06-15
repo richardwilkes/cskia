@@ -212,6 +212,8 @@ cp ../../capi/sk_capi.cpp src/
 grep -v src/sk_capi.cpp gn/core.gni | sed -e 's@skia_core_sources = \[@&\
   "$_src/sk_capi.cpp",@' >gn/core.gni.new
 /bin/mv gn/core.gni.new gn/core.gni
+sed -e 's@^class SkData;$@#include "include/core/SkData.h"@' src/pdf/SkPDFSubsetFont.h >src/pdf/SkPDFSubsetFont.h.new
+/bin/mv src/pdf/SkPDFSubsetFont.h.new src/pdf/SkPDFSubsetFont.h
 
 # Perform the build
 bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
