@@ -118,7 +118,7 @@ Darwin*)
       skia_use_x11=false \
       extra_cflags=[ \
         \"-Wno-unused-command-line-argument\" \
-      ]\
+      ] \
       extra_cflags_cc=[ \
         \"-DHAVE_XLOCALE_H\" \
       ] \
@@ -139,6 +139,9 @@ Linux*)
       skia_use_fontconfig=true \
       skia_use_freetype=true \
       skia_use_x11=true \
+      extra_cflags=[ \
+        \"-Wno-psabi\" \
+      ] \
       extra_cflags_cc=[ \
         \"-DHAVE_XLOCALE_H\" \
       ] \
