@@ -95,8 +95,6 @@ COMMON_ARGS=" \
   skia_use_zlib=true \
 "
 
-# change skia_use_libheif and skia_use_libjxl_decode
-
 case $(uname -s) in
 Darwin*)
 	OS_TYPE=darwin
