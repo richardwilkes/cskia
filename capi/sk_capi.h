@@ -323,22 +323,24 @@ typedef struct sk_paint_t sk_paint_t;
 // ===== Types from include/core/SkColorType.h =====
 
 typedef enum {
-    SK_COLOR_TYPE_UNKNOWN,        // uninitialized
-    SK_COLOR_TYPE_ALPHA_8,        // pixel with alpha in 8-bit byte
-    SK_COLOR_TYPE_RGB_565,        // pixel with 5 bits red, 6 bits green, 5 bits blue, in 16-bit word
-    SK_COLOR_TYPE_ARGB_4444,      // pixel with 4 bits for alpha, red, green, blue; in 16-bit word
-    SK_COLOR_TYPE_RGBA_8888,      // pixel with 8 bits for red, green, blue, alpha; in 32-bit word
-    SK_COLOR_TYPE_RGB_888X,       // pixel with 8 bits each for red, green, blue; in 32-bit word
-    SK_COLOR_TYPE_BGRA_8888,      // pixel with 8 bits for blue, green, red, alpha; in 32-bit word
-    SK_COLOR_TYPE_RGBA_1010102,   // 10 bits for red, green, blue; 2 bits for alpha; in 32-bit word
-    SK_COLOR_TYPE_BGRA_1010102,   // 10 bits for blue, green, red; 2 bits for alpha; in 32-bit word
-    SK_COLOR_TYPE_RGB_101010X,    // pixel with 10 bits each for red, green, blue; in 32-bit word
-    SK_COLOR_TYPE_BGR_101010X,    // pixel with 10 bits each for blue, green, red; in 32-bit word
-    SK_COLOR_TYPE_BGR_101010X_XR, // pixel with 10 bits each for blue, green, red; in 32-bit word, extended range
-    SK_COLOR_TYPE_GRAY_8,         // pixel with grayscale level in 8-bit byte
-    SK_COLOR_TYPE_RGBA_F16_NORM,  // pixel with half floats in [0,1] for red, green, blue, alpha; in 64-bit word
-    SK_COLOR_TYPE_RGBA_F16,       // pixel with half floats for red, green, blue, alpha; in 64-bit word
-    SK_COLOR_TYPE_RGBA_F32,       // pixel using C float for red, green, blue, alpha; in 128-bit word
+    SK_COLOR_TYPE_UNKNOWN,          // uninitialized
+    SK_COLOR_TYPE_ALPHA_8,          // pixel with alpha in 8-bit byte
+    SK_COLOR_TYPE_RGB_565,          // pixel with 5 bits red, 6 bits green, 5 bits blue, in 16-bit word
+    SK_COLOR_TYPE_ARGB_4444,        // pixel with 4 bits for alpha, red, green, blue; in 16-bit word
+    SK_COLOR_TYPE_RGBA_8888,        // pixel with 8 bits for red, green, blue, alpha; in 32-bit word
+    SK_COLOR_TYPE_RGB_888X,         // pixel with 8 bits each for red, green, blue; in 32-bit word
+    SK_COLOR_TYPE_BGRA_8888,        // pixel with 8 bits for blue, green, red, alpha; in 32-bit word
+    SK_COLOR_TYPE_RGBA_1010102,     // 10 bits for red, green, blue; 2 bits for alpha; in 32-bit word
+    SK_COLOR_TYPE_BGRA_1010102,     // 10 bits for blue, green, red; 2 bits for alpha; in 32-bit word
+    SK_COLOR_TYPE_RGB_101010X,      // pixel with 10 bits each for red, green, blue; in 32-bit word
+    SK_COLOR_TYPE_BGR_101010X,      // pixel with 10 bits each for blue, green, red; in 32-bit word
+    SK_COLOR_TYPE_BGR_101010X_XR,   // pixel with 10 bits each for blue, green, red; in 32-bit word, extended range
+	SK_COLOR_TYPE_BGRA_10101010_XR, // pixel with 10 bits each for blue, green, red, alpha; in 64-bit word, extended range
+    SK_COLOR_TYPE_RGBA_10x6,        // pixel with 10 used bits (most significant) followed by 6 unused bits for red, green, blue, alpha; in 64-bit word
+    SK_COLOR_TYPE_GRAY_8,           // pixel with grayscale level in 8-bit byte
+    SK_COLOR_TYPE_RGBA_F16_NORM,    // pixel with half floats in [0,1] for red, green, blue, alpha; in 64-bit word
+    SK_COLOR_TYPE_RGBA_F16,         // pixel with half floats for red, green, blue, alpha; in 64-bit word
+    SK_COLOR_TYPE_RGBA_F32,         // pixel using C float for red, green, blue, alpha; in 128-bit word
 
     // The following color types are read-only
     SK_COLOR_TYPE_R8G8_UNORM,         // pixel with a uint8_t for red and green
