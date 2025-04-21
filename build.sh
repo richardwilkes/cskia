@@ -2,9 +2,9 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set Sat Jun 15 11:00:00 PDT 2024
-DEPOT_TOOLS_COMMIT=1d1f17af898bc5158fb1128952894ac061b06f56
-SKIA_BRANCH=chrome/m127
+# Last set Mon Apr 21 12:56:08 PDT 2025
+DEPOT_TOOLS_COMMIT=5d891d2a8dd455a73ce6b9a835a6f575a549825b
+SKIA_BRANCH=chrome/m136
 
 for arg in "$@"; do
 	case "$arg" in
@@ -191,7 +191,7 @@ cd skia
 if [ ! -e depot_tools ]; then
 	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 	cd depot_tools
-	git reset --hard "${DEPOT_TOOLS_COMMIT}"
+	# git reset --hard "${DEPOT_TOOLS_COMMIT}"
 	cd ..
 fi
 export PATH="${PWD}/depot_tools:${PATH}"
