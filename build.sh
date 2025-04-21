@@ -60,7 +60,7 @@ export PATH="${PWD}/depot_tools:${PATH}"
 if [ ! -e skia ]; then
 	git clone -b "${SKIA_BRANCH}" --depth 1 --single-branch https://github.com/google/skia.git
 	cd skia
-	python3 tools/git-sync-deps
+	GIT_SYNC_DEPS_SKIP_EMSDK=1 python3 tools/git-sync-deps
 	python3 bin/fetch-ninja
 	cd ..
 fi
