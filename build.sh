@@ -60,11 +60,30 @@ export PATH="${PWD}/depot_tools:${PATH}"
 if [ ! -e skia ]; then
 	git clone -b "${SKIA_BRANCH}" --depth 1 --single-branch https://github.com/google/skia.git
 	cd skia
-	grep -v vulkan DEPS | grep -v spirv | grep -v dawn | grep -v emsdk | grep -v harfbuzz >DEPS.new
-
-	# First, change git-sync-deps to not use multiple threads, as that can cause an issue with too many open files
-	# sed -e 's@^  for thread in threads:$@@' -e 's@^    thread.join()$@@' -e 's@^    thread.start()$@    thread.start()\n    thread.join()@' tools/git-sync-deps >tools/git-sync-deps.nothreads
-	# chmod +x tools/git-sync-deps.nothreads
+	# Prune out some stuff we don't use. One or more of these was causing build failures on Linux and Windows if left
+	# in, so better to just remove them.
+	grep -v abseil DEPS |
+		grep -v angle2 |
+		grep -v avif |
+		grep -v dawn |
+		grep -v dng_sdk |
+		grep -v egl |
+		grep -v emsdk |
+		grep -v grapheme |
+		grep -v harfbuzz |
+		grep -v icu |
+		grep -v jinja |
+		grep -v jxl |
+		grep -v libgav1 |
+		grep -v markupsafe |
+		grep -v oboe |
+		grep -v perfetto |
+		grep -v piex |
+		grep -v spirv |
+		grep -v unicodetools |
+		grep -v vello |
+		grep -v vulkan |
+		>DEPS.new
 
 	GIT_SYNC_DEPS_SKIP_EMSDK=1 GIT_SYNC_DEPS_PATH=DEPS.new python3 tools/git-sync-deps
 	python3 bin/fetch-ninja
