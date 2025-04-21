@@ -48,8 +48,33 @@ if [ "$SHOW_ARGS"x == "1x" ]; then
 	exit 0
 fi
 
-BUILD_DIR=${PWD}/skia/build
-DIST=${PWD}/dist
+# Setup the Skia tree, pulling sources, if needed.
+mkdir -p skia
+cd skia
+
+if [ ! -e depot_tools ]; then
+	git clone --depth 1 --single-branch https://chromium.googlesource.com/chromium/tools/depot_tools.git
+fi
+export PATH="${PWD}/depot_tools:${PATH}"
+
+if [ ! -e skia ]; then
+	git clone -b "${SKIA_BRANCH}" --depth 1 --single-branch https://github.com/google/skia.git
+	cd skia
+	python3 tools/git-sync-deps
+	python3 bin/fetch-ninja
+	cd ..
+fi
+
+# Apply our changes.
+cd skia
+/bin/rm -rf src/c include/c
+cp ../../capi/sk_capi.h include/
+cp ../../capi/sk_capi.cpp src/
+grep -v src/sk_capi.cpp gn/core.gni | sed -e 's@skia_core_sources = \[@&\
+  "$_src/sk_capi.cpp",@' >gn/core.gni.new
+/bin/mv gn/core.gni.new gn/core.gni
+sed -e 's@^class SkData;$@#include "include/core/SkData.h"@' src/pdf/SkPDFSubsetFont.h >src/pdf/SkPDFSubsetFont.h.new
+/bin/mv src/pdf/SkPDFSubsetFont.h.new src/pdf/SkPDFSubsetFont.h
 
 # As changes to Skia are made, these args may need to be adjusted.
 # Use 'bin/gn args $BUILD_DIR --list' to see what args are available.
@@ -94,6 +119,9 @@ COMMON_ARGS=" \
   skia_use_xps=false \
   skia_use_zlib=true \
 "
+
+BUILD_DIR=${PWD}/skia/build
+DIST=${PWD}/dist
 
 case $(uname -s) in
 Darwin*)
@@ -183,38 +211,6 @@ MINGW*)
 	false
 	;;
 esac
-
-# Setup the Skia tree, pulling sources, if needed.
-mkdir -p skia
-cd skia
-
-if [ ! -e depot_tools ]; then
-	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-	cd depot_tools
-	git reset --hard "${DEPOT_TOOLS_COMMIT}"
-	cd ..
-fi
-export PATH="${PWD}/depot_tools:${PATH}"
-
-if [ ! -e skia ]; then
-	git clone https://github.com/google/skia.git
-	cd skia
-	git checkout "${SKIA_BRANCH}"
-	python3 tools/git-sync-deps
-	python3 bin/fetch-ninja
-	cd ..
-fi
-
-# Apply our changes.
-cd skia
-/bin/rm -rf src/c include/c
-cp ../../capi/sk_capi.h include/
-cp ../../capi/sk_capi.cpp src/
-grep -v src/sk_capi.cpp gn/core.gni | sed -e 's@skia_core_sources = \[@&\
-  "$_src/sk_capi.cpp",@' >gn/core.gni.new
-/bin/mv gn/core.gni.new gn/core.gni
-sed -e 's@^class SkData;$@#include "include/core/SkData.h"@' src/pdf/SkPDFSubsetFont.h >src/pdf/SkPDFSubsetFont.h.new
-/bin/mv src/pdf/SkPDFSubsetFont.h.new src/pdf/SkPDFSubsetFont.h
 
 # Perform the build
 bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
