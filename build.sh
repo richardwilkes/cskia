@@ -60,12 +60,13 @@ export PATH="${PWD}/depot_tools:${PATH}"
 if [ ! -e skia ]; then
 	git clone -b "${SKIA_BRANCH}" --depth 1 --single-branch https://github.com/google/skia.git
 	cd skia
+	grep -v vulkan DEPS | grep -v spirv | grep -v dawn | grep -v emsdk | grep -v harfbuzz >DEPS.new
 
 	# First, change git-sync-deps to not use multiple threads, as that can cause an issue with too many open files
-	sed -e 's@^  for thread in threads:$@@' -e 's@^    thread.join()$@@' -e 's@^    thread.start()$@    thread.start()\n    thread.join()@' tools/git-sync-deps >tools/git-sync-deps.nothreads
-	chmod +x tools/git-sync-deps.nothreads
+	# sed -e 's@^  for thread in threads:$@@' -e 's@^    thread.join()$@@' -e 's@^    thread.start()$@    thread.start()\n    thread.join()@' tools/git-sync-deps >tools/git-sync-deps.nothreads
+	# chmod +x tools/git-sync-deps.nothreads
 
-	GIT_SYNC_DEPS_SKIP_EMSDK=1 python3 tools/git-sync-deps.nothreads
+	GIT_SYNC_DEPS_SKIP_EMSDK=1 GIT_SYNC_DEPS_PATH=DEPS.new python3 tools/git-sync-deps
 	python3 bin/fetch-ninja
 	cd ..
 fi
