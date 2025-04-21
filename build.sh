@@ -191,7 +191,7 @@ cd skia
 if [ ! -e depot_tools ]; then
 	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 	cd depot_tools
-	# git reset --hard "${DEPOT_TOOLS_COMMIT}"
+	git reset --hard "${DEPOT_TOOLS_COMMIT}"
 	cd ..
 fi
 export PATH="${PWD}/depot_tools:${PATH}"
