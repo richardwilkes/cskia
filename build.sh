@@ -2,9 +2,9 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set Sat Jun 15 11:00:00 PDT 2024
-DEPOT_TOOLS_COMMIT=1d1f17af898bc5158fb1128952894ac061b06f56
-SKIA_BRANCH=chrome/m127
+# Last set Mon Apr 21 12:56:08 PDT 2025
+DEPOT_TOOLS_COMMIT=5d891d2a8dd455a73ce6b9a835a6f575a549825b
+SKIA_BRANCH=chrome/m136
 
 for arg in "$@"; do
 	case "$arg" in
@@ -48,8 +48,37 @@ if [ "$SHOW_ARGS"x == "1x" ]; then
 	exit 0
 fi
 
-BUILD_DIR=${PWD}/skia/build
-DIST=${PWD}/dist
+# Setup the Skia tree, pulling sources, if needed.
+mkdir -p skia
+cd skia
+
+if [ ! -e depot_tools ]; then
+	git clone --depth 1 --single-branch https://chromium.googlesource.com/chromium/tools/depot_tools.git
+fi
+export PATH="${PWD}/depot_tools:${PATH}"
+
+if [ ! -e skia ]; then
+	git clone -b "${SKIA_BRANCH}" --depth 1 --single-branch https://github.com/google/skia.git
+	cd skia
+	# Prune out some stuff we don't use. One or more of these was causing build failures on Linux and Windows if left
+	# in, so better to just remove them.
+	grep -v abseil DEPS | grep -v angle2 | grep -v avif | grep -v dawn | grep -v dng_sdk | grep -v egl | grep -v emsdk | grep -v grapheme | grep -v harfbuzz | grep -v icu | grep -v jinja | grep -v jxl | grep -v libgav1 | grep -v markupsafe | grep -v oboe | grep -v perfetto | grep -v piex | grep -v spirv | grep -v unicodetools | grep -v vello | grep -v vulkan >DEPS.new
+
+	GIT_SYNC_DEPS_SKIP_EMSDK=1 GIT_SYNC_DEPS_PATH=DEPS.new python3 tools/git-sync-deps
+	python3 bin/fetch-ninja
+	cd ..
+fi
+
+# Apply our changes.
+cd skia
+/bin/rm -rf src/c include/c
+cp ../../capi/sk_capi.h include/
+cp ../../capi/sk_capi.cpp src/
+grep -v src/sk_capi.cpp gn/core.gni | sed -e 's@skia_core_sources = \[@&\
+  "$_src/sk_capi.cpp",@' >gn/core.gni.new
+/bin/mv gn/core.gni.new gn/core.gni
+sed -e 's@^class SkData;$@#include "include/core/SkData.h"@' src/pdf/SkPDFSubsetFont.h >src/pdf/SkPDFSubsetFont.h.new
+/bin/mv src/pdf/SkPDFSubsetFont.h.new src/pdf/SkPDFSubsetFont.h
 
 # As changes to Skia are made, these args may need to be adjusted.
 # Use 'bin/gn args $BUILD_DIR --list' to see what args are available.
@@ -94,6 +123,9 @@ COMMON_ARGS=" \
   skia_use_xps=false \
   skia_use_zlib=true \
 "
+
+BUILD_DIR=${PWD}/skia/build
+DIST=${PWD}/dist
 
 case $(uname -s) in
 Darwin*)
@@ -183,38 +215,6 @@ MINGW*)
 	false
 	;;
 esac
-
-# Setup the Skia tree, pulling sources, if needed.
-mkdir -p skia
-cd skia
-
-if [ ! -e depot_tools ]; then
-	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-	cd depot_tools
-	git reset --hard "${DEPOT_TOOLS_COMMIT}"
-	cd ..
-fi
-export PATH="${PWD}/depot_tools:${PATH}"
-
-if [ ! -e skia ]; then
-	git clone https://github.com/google/skia.git
-	cd skia
-	git checkout "${SKIA_BRANCH}"
-	python3 tools/git-sync-deps
-	python3 bin/fetch-ninja
-	cd ..
-fi
-
-# Apply our changes.
-cd skia
-/bin/rm -rf src/c include/c
-cp ../../capi/sk_capi.h include/
-cp ../../capi/sk_capi.cpp src/
-grep -v src/sk_capi.cpp gn/core.gni | sed -e 's@skia_core_sources = \[@&\
-  "$_src/sk_capi.cpp",@' >gn/core.gni.new
-/bin/mv gn/core.gni.new gn/core.gni
-sed -e 's@^class SkData;$@#include "include/core/SkData.h"@' src/pdf/SkPDFSubsetFont.h >src/pdf/SkPDFSubsetFont.h.new
-/bin/mv src/pdf/SkPDFSubsetFont.h.new src/pdf/SkPDFSubsetFont.h
 
 # Perform the build
 bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
