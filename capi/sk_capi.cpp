@@ -1457,6 +1457,11 @@ bool sk_path_get_last_point(const sk_path_t *cpath, sk_point_t *point)
 	return reinterpret_cast<const SkPath *>(cpath)->getLastPt(reinterpret_cast<SkPoint *>(point));
 }
 
+bool sk_path_is_empty(const sk_path_t *cpath)
+{
+	return reinterpret_cast<const SkPath *>(cpath)->isEmpty();
+}
+
 void sk_path_line_to(sk_path_t *cpath, float x, float y)
 {
 	reinterpret_cast<SkPath *>(cpath)->lineTo(x, y);
