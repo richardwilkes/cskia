@@ -325,10 +325,7 @@ static_assert(sizeof(sk_text_blob_builder_run_buffer_t) == sizeof(SkTextBlobBuil
 
 static inline SkMatrix AsMatrix(const sk_matrix_t *matrix)
 {
-	return SkMatrix::MakeAll(
-		matrix->scaleX, matrix->skewX, matrix->transX,
-		matrix->skewY, matrix->scaleY, matrix->transY,
-		matrix->persp0, matrix->persp1, matrix->persp2);
+	return SkMatrix::MakeAll(matrix->scaleX, matrix->skewX, matrix->transX, matrix->skewY, matrix->scaleY, matrix->transY, matrix->persp0, matrix->persp1, matrix->persp2);
 }
 
 static inline sk_matrix_t ToMatrix(const SkMatrix *matrix)
@@ -348,19 +345,13 @@ static inline sk_matrix_t ToMatrix(const SkMatrix *matrix)
 
 static inline SkImageInfo AsImageInfo(const sk_image_info_t *info)
 {
-	return SkImageInfo::Make(
-		info->width,
-		info->height,
-		(SkColorType)info->colorType,
-		(SkAlphaType)info->alphaType,
-		sk_ref_sp(reinterpret_cast<SkColorSpace *>(info->colorSpace)));
+	return SkImageInfo::Make(info->width, info->height, (SkColorType)info->colorType, (SkAlphaType)info->alphaType, sk_ref_sp(reinterpret_cast<SkColorSpace *>(info->colorSpace)));
 }
 
 // ===== Functions from include/gpu/GrBackendSurface.h =====
 gr_backendrendertarget_t *gr_backendrendertarget_new_gl(int width, int height, int samples, int stencils, const gr_gl_framebufferinfo_t *glInfo)
 {
-	return reinterpret_cast<gr_backendrendertarget_t *>(new GrBackendRenderTarget(GrBackendRenderTargets::MakeGL(width, height,
-																												 samples, stencils, *reinterpret_cast<const GrGLFramebufferInfo *>(glInfo))));
+	return reinterpret_cast<gr_backendrendertarget_t *>(new GrBackendRenderTarget(GrBackendRenderTargets::MakeGL(width, height, samples, stencils, *reinterpret_cast<const GrGLFramebufferInfo *>(glInfo))));
 }
 
 void gr_backendrendertarget_delete(gr_backendrendertarget_t *rendertarget)
@@ -409,7 +400,13 @@ void gr_direct_context_unref(const gr_direct_context_t *context)
 	SkSafeUnref(reinterpret_cast<const GrDirectContext *>(context));
 }
 
-// ===== Functions from include/gpu/gl/GrGLInterface.h =====
+// ===== Functions from include/gpu/ganesh/gl/GrGLAssembleInterface.h =====
+const gr_glinterface_t *gr_glmake_assembled_interface(void *ctx, gr_glget_proc get)
+{
+	return reinterpret_cast<const gr_glinterface_t *>(GrGLMakeAssembledInterface(ctx, get).release());
+}
+
+// ===== Functions from include/gpu/ganesh/gl/GrGLInterface.h =====
 const gr_glinterface_t *gr_glinterface_create_native_interface(void)
 {
 	return reinterpret_cast<const gr_glinterface_t *>(GrGLMakeNativeInterface().release());
@@ -927,34 +924,23 @@ void sk_image_unref(const sk_image_t *cimage)
 // ===== Functions from include/gpu/ganesh/SkImageGanesh.h =====
 sk_image_t *sk_image_texture_from_image(gr_direct_context_t *ctx, const sk_image_t *image, bool mipmapped, bool budgeted)
 {
-	return reinterpret_cast<sk_image_t *>(SkImages::TextureFromImage(reinterpret_cast<GrDirectContext *>(ctx),
-																	 reinterpret_cast<const SkImage *>(image), (skgpu::Mipmapped)mipmapped, (skgpu::Budgeted)budgeted)
-											  .release());
+	return reinterpret_cast<sk_image_t *>(SkImages::TextureFromImage(reinterpret_cast<GrDirectContext *>(ctx), reinterpret_cast<const SkImage *>(image), (skgpu::Mipmapped)mipmapped, (skgpu::Budgeted)budgeted).release());
 }
 
 // ===== Functions from include/core/SkImageFilter.h =====
 sk_image_filter_t *sk_imagefilter_new_arithmetic(float k1, float k2, float k3, float k4, bool enforcePMColor, sk_image_filter_t *background, sk_image_filter_t *foreground, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Arithmetic(k1, k2, k3, k4, enforcePMColor,
-																			sk_ref_sp(reinterpret_cast<SkImageFilter *>(background)), sk_ref_sp(reinterpret_cast<SkImageFilter *>(foreground)),
-																			SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Arithmetic(k1, k2, k3, k4, enforcePMColor, sk_ref_sp(reinterpret_cast<SkImageFilter *>(background)), sk_ref_sp(reinterpret_cast<SkImageFilter *>(foreground)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_blur(float sigmaX, float sigmaY, sk_tile_mode_t tileMode, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Blur(sigmaX, sigmaY,
-																	  (SkTileMode)tileMode, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-																	  SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Blur(sigmaX, sigmaY, (SkTileMode)tileMode, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_color_filter(sk_color_filter_t *cf, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::ColorFilter(sk_ref_sp(reinterpret_cast<SkColorFilter *>(cf)),
-																			 sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-																			 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::ColorFilter(sk_ref_sp(reinterpret_cast<SkColorFilter *>(cf)), sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_compose(sk_image_filter_t *outer, sk_image_filter_t *inner)
@@ -964,103 +950,62 @@ sk_image_filter_t *sk_imagefilter_new_compose(sk_image_filter_t *outer, sk_image
 
 sk_image_filter_t *sk_imagefilter_new_dilate(int radiusX, int radiusY, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Dilate(radiusX, radiusY,
-																		sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-																		SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Dilate(radiusX, radiusY, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_displacement_map_effect(sk_color_channel_t xChannelSelector, sk_color_channel_t yChannelSelector, float scale, sk_image_filter_t *displacement, sk_image_filter_t *color, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DisplacementMap((SkColorChannel)xChannelSelector,
-																				 (SkColorChannel)yChannelSelector, scale, sk_ref_sp(reinterpret_cast<SkImageFilter *>(displacement)),
-																				 sk_ref_sp(reinterpret_cast<SkImageFilter *>(color)),
-																				 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DisplacementMap((SkColorChannel)xChannelSelector, (SkColorChannel)yChannelSelector, scale, sk_ref_sp(reinterpret_cast<SkImageFilter *>(displacement)), sk_ref_sp(reinterpret_cast<SkImageFilter *>(color)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_distant_lit_diffuse(const sk_point3_t *direction, sk_color_t lightColor, float surfaceScale, float kd, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DistantLitDiffuse(
-													 *reinterpret_cast<const SkPoint3 *>(direction), lightColor, surfaceScale, kd,
-													 sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-													 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DistantLitDiffuse(*reinterpret_cast<const SkPoint3 *>(direction), lightColor, surfaceScale, kd, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_distant_lit_specular(const sk_point3_t *direction, sk_color_t lightColor, float surfaceScale, float ks, float shininess, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DistantLitSpecular(
-													 *reinterpret_cast<const SkPoint3 *>(direction), lightColor, surfaceScale, ks, shininess,
-													 sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-													 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DistantLitSpecular(*reinterpret_cast<const SkPoint3 *>(direction), lightColor, surfaceScale, ks, shininess, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_drop_shadow(float dx, float dy, float sigmaX, float sigmaY, sk_color_t color, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DropShadow(dx, dy, sigmaX, sigmaY, color,
-																			sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-																			SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DropShadow(dx, dy, sigmaX, sigmaY, color, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_drop_shadow_only(float dx, float dy, float sigmaX, float sigmaY, sk_color_t color, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DropShadowOnly(dx, dy, sigmaX, sigmaY, color,
-																				sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-																				SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::DropShadowOnly(dx, dy, sigmaX, sigmaY, color, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_erode(int radiusX, int radiusY, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Erode(radiusX, radiusY,
-																	   sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-																	   SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Erode(radiusX, radiusY, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_image_source(sk_image_t *image, const sk_rect_t *srcRect, const sk_rect_t *dstRect, const sk_sampling_options_t *samplingOptions)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Image(sk_ref_sp(reinterpret_cast<SkImage *>(image)),
-																	   *reinterpret_cast<const SkRect *>(srcRect), *reinterpret_cast<const SkRect *>(dstRect),
-																	   *reinterpret_cast<const SkSamplingOptions *>(samplingOptions))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Image(sk_ref_sp(reinterpret_cast<SkImage *>(image)), *reinterpret_cast<const SkRect *>(srcRect), *reinterpret_cast<const SkRect *>(dstRect), *reinterpret_cast<const SkSamplingOptions *>(samplingOptions)).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_image_source_default(sk_image_t *image, const sk_sampling_options_t *samplingOptions)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Image(sk_ref_sp(reinterpret_cast<SkImage *>(image)),
-																	   *reinterpret_cast<const SkSamplingOptions *>(samplingOptions))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Image(sk_ref_sp(reinterpret_cast<SkImage *>(image)), *reinterpret_cast<const SkSamplingOptions *>(samplingOptions)).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_magnifier(const sk_rect_t *lensBounds, float zoomAmount, float inset, const sk_sampling_options_t *samplingOptions, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Magnifier(*reinterpret_cast<const SkRect *>(lensBounds),
-																		   zoomAmount, inset, *reinterpret_cast<const SkSamplingOptions *>(samplingOptions),
-																		   sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-																		   SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Magnifier(*reinterpret_cast<const SkRect *>(lensBounds), zoomAmount, inset, *reinterpret_cast<const SkSamplingOptions *>(samplingOptions), sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_matrix_convolution(const sk_isize_t *kernelSize, const float kernel[], float gain, float bias, const sk_ipoint_t *kernelOffset, sk_tile_mode_t ctileMode, bool convolveAlpha, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::MatrixConvolution(
-													 *reinterpret_cast<const SkISize *>(kernelSize), kernel, gain, bias,
-													 *reinterpret_cast<const SkIPoint *>(kernelOffset), (SkTileMode)ctileMode, convolveAlpha,
-													 sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-													 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::MatrixConvolution(*reinterpret_cast<const SkISize *>(kernelSize), kernel, gain, bias, *reinterpret_cast<const SkIPoint *>(kernelOffset), (SkTileMode)ctileMode, convolveAlpha, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_matrix_transform(const sk_matrix_t *matrix, const sk_sampling_options_t *samplingOptions, sk_image_filter_t *input)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::MatrixTransform(AsMatrix(matrix),
-																				 *reinterpret_cast<const SkSamplingOptions *>(samplingOptions),
-																				 sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::MatrixTransform(AsMatrix(matrix), *reinterpret_cast<const SkSamplingOptions *>(samplingOptions), sk_ref_sp(reinterpret_cast<SkImageFilter *>(input))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_merge(sk_image_filter_t *cfilters[], int count, const sk_rect_t *cropRect)
@@ -1070,60 +1015,37 @@ sk_image_filter_t *sk_imagefilter_new_merge(sk_image_filter_t *cfilters[], int c
 	{
 		filters[i] = sk_ref_sp(reinterpret_cast<SkImageFilter *>(cfilters[i]));
 	}
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Merge(filters.data(), count,
-																	   SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Merge(filters.data(), count, SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_offset(float dx, float dy, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Offset(dx, dy,
-																		sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-																		SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Offset(dx, dy, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_point_lit_diffuse(const sk_point3_t *location, sk_color_t lightColor, float surfaceScale, float kd, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::PointLitDiffuse(
-													 *reinterpret_cast<const SkPoint3 *>(location), lightColor, surfaceScale, kd,
-													 sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-													 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::PointLitDiffuse( *reinterpret_cast<const SkPoint3 *>(location), lightColor, surfaceScale, kd, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_point_lit_specular(const sk_point3_t *location, sk_color_t lightColor, float surfaceScale, float ks, float shininess, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::PointLitSpecular(
-													 *reinterpret_cast<const SkPoint3 *>(location), lightColor, surfaceScale, ks, shininess,
-													 sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-													 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::PointLitSpecular(*reinterpret_cast<const SkPoint3 *>(location), lightColor, surfaceScale, ks, shininess, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_spot_lit_diffuse(const sk_point3_t *location, const sk_point3_t *target, float specularExponent, float cutoffAngle, sk_color_t lightColor, float surfaceScale, float kd, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::SpotLitDiffuse(
-													 *reinterpret_cast<const SkPoint3 *>(location), *reinterpret_cast<const SkPoint3 *>(target), specularExponent,
-													 cutoffAngle, lightColor, surfaceScale, kd, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-													 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::SpotLitDiffuse(*reinterpret_cast<const SkPoint3 *>(location), *reinterpret_cast<const SkPoint3 *>(target), specularExponent, cutoffAngle, lightColor, surfaceScale, kd, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_spot_lit_specular(const sk_point3_t *location, const sk_point3_t *target, float specularExponent, float cutoffAngle, sk_color_t lightColor, float surfaceScale, float ks, float shininess, sk_image_filter_t *input, const sk_rect_t *cropRect)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::SpotLitSpecular(
-													 *reinterpret_cast<const SkPoint3 *>(location), *reinterpret_cast<const SkPoint3 *>(target), specularExponent,
-													 cutoffAngle, lightColor, surfaceScale, ks, shininess, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)),
-													 SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::SpotLitSpecular(*reinterpret_cast<const SkPoint3 *>(location), *reinterpret_cast<const SkPoint3 *>(target), specularExponent, cutoffAngle, lightColor, surfaceScale, ks, shininess, sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)), SkImageFilters::CropRect(reinterpret_cast<const SkRect *>(cropRect))).release());
 }
 
 sk_image_filter_t *sk_imagefilter_new_tile(const sk_rect_t *src, const sk_rect_t *dst, sk_image_filter_t *input)
 {
-	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Tile(*reinterpret_cast<const SkRect *>(src),
-																	  *reinterpret_cast<const SkRect *>(dst), sk_ref_sp(reinterpret_cast<SkImageFilter *>(input)))
-													 .release());
+	return reinterpret_cast<sk_image_filter_t *>(SkImageFilters::Tile(*reinterpret_cast<const SkRect *>(src), *reinterpret_cast<const SkRect *>(dst), sk_ref_sp(reinterpret_cast<SkImageFilter *>(input))).release());
 }
 
 void sk_imagefilter_unref(sk_image_filter_t *filter)
@@ -1749,10 +1671,7 @@ sk_canvas_t *sk_surface_get_canvas(sk_surface_t *surface)
 
 sk_surface_t *sk_surface_new_backend_render_target(gr_direct_context_t *context, const gr_backendrendertarget_t *target, gr_surface_origin_t origin, sk_color_type_t colorType, sk_color_space_t *colorspace, const sk_surface_props_t *props)
 {
-	return reinterpret_cast<sk_surface_t *>(SkSurfaces::WrapBackendRenderTarget(reinterpret_cast<GrDirectContext *>(context),
-																				*reinterpret_cast<const GrBackendRenderTarget *>(target), (GrSurfaceOrigin)origin, (SkColorType)colorType,
-																				sk_ref_sp(reinterpret_cast<SkColorSpace *>(colorspace)), reinterpret_cast<const SkSurfaceProps *>(props))
-												.release());
+	return reinterpret_cast<sk_surface_t *>(SkSurfaces::WrapBackendRenderTarget(reinterpret_cast<GrDirectContext *>(context), *reinterpret_cast<const GrBackendRenderTarget *>(target), (GrSurfaceOrigin)origin, (SkColorType)colorType, sk_ref_sp(reinterpret_cast<SkColorSpace *>(colorspace)), reinterpret_cast<const SkSurfaceProps *>(props)).release());
 }
 
 sk_image_t *sk_surface_make_image_snapshot(sk_surface_t *surface)
