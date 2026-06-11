@@ -803,7 +803,7 @@ sk_font_mgr_t *sk_fontmgr_ref_default(void)
 #elif defined(SK_BUILD_FOR_WIN)
 	return reinterpret_cast<sk_font_mgr_t *>(SkFontMgr_New_DirectWrite().release());
 #elif defined(SK_FONTMGR_FONTCONFIG_AVAILABLE)
-	return reinterpret_cast<sk_font_mgr_t *>(SkFontMgr_New_FontConfig(nullptr).release());
+	return reinterpret_cast<sk_font_mgr_t *>(SkFontMgr_New_FontConfig(nullptr, SkFontScanner_Make_FreeType()).release());
 #else
 #error "No font manager available for this platform"
 #endif
