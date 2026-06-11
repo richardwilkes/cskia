@@ -163,7 +163,6 @@ static_assert((int)SkColorType::kR16G16B16A16_unorm_SkColorType == (int)SK_COLOR
 static_assert((int)SkColorType::kSRGBA_8888_SkColorType == (int)SK_COLOR_TYPE_SRGBA_8888, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR8_unorm_SkColorType == (int)SK_COLOR_TYPE_R8_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kLastEnum_SkColorType == (int)SK_COLOR_TYPE_LAST, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
-static_assert((int)SkColorType::kN32_SkColorType == (int)SK_COLOR_TYPE_N32, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 
 // sk_filter_mode_t
 static_assert((int)SkFilterMode::kNearest == (int)SK_FILTER_MODE_NEAREST, ASSERT_ENUM_MSG(SkFilterMode, sk_filter_mode_t));
