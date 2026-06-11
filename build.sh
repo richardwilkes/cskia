@@ -4,12 +4,13 @@ set -eo pipefail
 # These two variables should be set in tandem to keep a consistent set of sources.
 # Last set Wed Jun 10 17:25:00 PDT 2026
 DEPOT_TOOLS_COMMIT=488d7480e234ccbca59a49eadf9d23cd7aa02c31
-SKIA_BRANCH=chrome/m141
+SKIA_BRANCH=chrome/m142
 
-BUILD_DIR=${PWD}/skia/build
-DIST=${PWD}/dist
+ROOT_DIR=$(pwd -P)
+BUILD_DIR=${ROOT_DIR}/skia/build
+DIST=${ROOT_DIR}/dist
 
-export PATH="${PWD}/skia/depot_tools:${PATH}"
+export PATH="${ROOT_DIR}/skia/depot_tools:${PATH}"
 
 for arg in "$@"; do
 	case "$arg" in
@@ -111,7 +112,6 @@ COMMON_ARGS=" \
   skia_use_gl=true \
   skia_use_harfbuzz=false \
   skia_use_icu=false \
-  skia_use_libheif=false \
   skia_use_libjxl_decode=false \
   skia_use_lua=false \
   skia_use_metal=false \

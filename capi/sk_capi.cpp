@@ -140,27 +140,30 @@ static_assert((int)SkColorType::kAlpha_8_SkColorType == (int)SK_COLOR_TYPE_ALPHA
 static_assert((int)SkColorType::kRGB_565_SkColorType == (int)SK_COLOR_TYPE_RGB_565, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kARGB_4444_SkColorType == (int)SK_COLOR_TYPE_ARGB_4444, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGBA_8888_SkColorType == (int)SK_COLOR_TYPE_RGBA_8888, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
-static_assert((int)SkColorType::kBGRA_8888_SkColorType == (int)SK_COLOR_TYPE_BGRA_8888, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGB_888x_SkColorType == (int)SK_COLOR_TYPE_RGB_888X, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kBGRA_8888_SkColorType == (int)SK_COLOR_TYPE_BGRA_8888, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGBA_1010102_SkColorType == (int)SK_COLOR_TYPE_RGBA_1010102, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kBGRA_1010102_SkColorType == (int)SK_COLOR_TYPE_BGRA_1010102, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGB_101010x_SkColorType == (int)SK_COLOR_TYPE_RGB_101010X, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kBGR_101010x_SkColorType == (int)SK_COLOR_TYPE_BGR_101010X, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kBGR_101010x_XR_SkColorType == (int)SK_COLOR_TYPE_BGR_101010X_XR, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kBGRA_10101010_XR_SkColorType == (int)SK_COLOR_TYPE_BGRA_10101010_XR, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kRGBA_10x6_SkColorType == (int)SK_COLOR_TYPE_RGBA_10x6, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kGray_8_SkColorType == (int)SK_COLOR_TYPE_GRAY_8, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGBA_F16Norm_SkColorType == (int)SK_COLOR_TYPE_RGBA_F16_NORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGBA_F16_SkColorType == (int)SK_COLOR_TYPE_RGBA_F16, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGB_F16F16F16x_SkColorType == (int)SK_COLOR_TYPE_RGBA_F16F16F16x, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kRGBA_F32_SkColorType == (int)SK_COLOR_TYPE_RGBA_F32, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR8G8_unorm_SkColorType == (int)SK_COLOR_TYPE_R8G8_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
-static_assert((int)SkColorType::kA16_unorm_SkColorType == (int)SK_COLOR_TYPE_A16_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
-static_assert((int)SkColorType::kR16G16_unorm_SkColorType == (int)SK_COLOR_TYPE_R16G16_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kA16_float_SkColorType == (int)SK_COLOR_TYPE_A16_FLOAT, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kR16G16_unorm_SkColorType == (int)SK_COLOR_TYPE_R16G16_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kA16_unorm_SkColorType == (int)SK_COLOR_TYPE_A16_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR16G16_float_SkColorType == (int)SK_COLOR_TYPE_R16G16_FLOAT, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR16G16B16A16_unorm_SkColorType == (int)SK_COLOR_TYPE_R16G16B16A16_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kSRGBA_8888_SkColorType == (int)SK_COLOR_TYPE_SRGBA_8888, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kR8_unorm_SkColorType == (int)SK_COLOR_TYPE_R8_UNORM, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 static_assert((int)SkColorType::kLastEnum_SkColorType == (int)SK_COLOR_TYPE_LAST, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
+static_assert((int)SkColorType::kN32_SkColorType == (int)SK_COLOR_TYPE_N32, ASSERT_ENUM_MSG(SkColorType, sk_color_type_t));
 
 // sk_filter_mode_t
 static_assert((int)SkFilterMode::kNearest == (int)SK_FILTER_MODE_NEAREST, ASSERT_ENUM_MSG(SkFilterMode, sk_filter_mode_t));
