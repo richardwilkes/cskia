@@ -56,6 +56,7 @@
 
 #if defined(SK_FONTMGR_FONTCONFIG_AVAILABLE)
 #include "include/ports/SkFontMgr_fontconfig.h"
+#include "include/ports/SkFontScanner_FreeType.h"
 #endif
 
 #if defined(SK_BUILD_FOR_WIN)
