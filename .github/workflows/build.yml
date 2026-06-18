@@ -1,0 +1,72 @@
+name: Build cskia
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-linux-amd64:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 ninja-build libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxi-dev gcc g++ clang
+      - name: Build
+        run: bash build.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libskia_linux_amd64
+          path: skia/skia/dist/lib/linux/libskia_linux_amd64.a
+
+  build-linux-arm64:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Build via Docker
+        run: |
+          docker run --rm --platform linux/arm64 -v ${{ github.workspace }}:/workspace -w /workspace ubuntu:22.04 bash -c "
+            apt-get update && apt-get install -y git python3 ninja-build libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxi-dev gcc g++ clang
+            bash build.sh
+          "
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libskia_linux_arm64
+          path: skia/skia/dist/lib/linux/libskia_linux_arm64.a
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: brew install ninja python3
+      - name: Build (macOS uses universal build script or native)
+        run: bash build.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libskia_darwin
+          path: skia/skia/dist/lib/darwin/
+
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: bash build.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: skia_windows
+          path: skia/skia/dist/lib/windows/skia_windows.dll
