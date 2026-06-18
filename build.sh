@@ -163,8 +163,22 @@ Darwin*)
 Linux*)
 	OS_TYPE=linux
 	LIB_NAME=libskia.a
-	UNISON_LIB_NAME=libskia_linux.a
+	case $(uname -m) in
+	x86_64*)
+		UNISON_LIB_NAME=libskia_linux_amd64.a
+		TARGET_CPU_ARG='target_cpu="x64"'
+		;;
+	aarch64*|arm64*)
+		UNISON_LIB_NAME=libskia_linux_arm64.a
+		TARGET_CPU_ARG='target_cpu="arm64"'
+		;;
+	*)
+		echo "Unsupported Linux architecture: $(uname -m)"
+		false
+		;;
+	esac
 	PLATFORM_ARGS=" \
+      ${TARGET_CPU_ARG} \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=false \
       skia_enable_fontmgr_fontconfig=true \
@@ -225,7 +239,7 @@ mkdir -p "${DIST}/include"
 /bin/rm -f ${DIST}/include/*.h
 cp include/sk_capi.h "${DIST}/include/"
 mkdir -p "${DIST}/lib/${OS_TYPE}"
-cp "${BUILD_DIR}/${LIB_NAME}" "${DIST}/lib/${OS_TYPE}/"
+cp "${BUILD_DIR}/${LIB_NAME}" "${DIST}/lib/${OS_TYPE}/${UNISON_LIB_NAME}"
 
 cd ../..
 
@@ -234,6 +248,6 @@ if [ -d ../unison ]; then
 	RELATIVE_UNISON_DIR=../unison/internal/skia
 	mkdir -p "${RELATIVE_UNISON_DIR}"
 	cp "${DIST}/include/sk_capi.h" "${RELATIVE_UNISON_DIR}/"
-	cp "${DIST}/lib/${OS_TYPE}/${LIB_NAME}" "${RELATIVE_UNISON_DIR}/${UNISON_LIB_NAME}"
-	echo "Copied distribution to unison"
+	cp "${DIST}/lib/${OS_TYPE}/${UNISON_LIB_NAME}" "${RELATIVE_UNISON_DIR}/${UNISON_LIB_NAME}"
+	echo "Copied distribution to unison: ${UNISON_LIB_NAME}"
 fi
