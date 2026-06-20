@@ -55,4 +55,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: skia/skia/dist/lib/${{ matrix.artifact }}.${{ matrix.ext }}
+          path: dist/lib/${{ matrix.artifact }}.${{ matrix.ext }}
