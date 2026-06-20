@@ -127,20 +127,26 @@ COMMON_ARGS=" \
   skia_use_zlib=true \
 "
 
+case $(uname -m) in
+x86_64*)
+	TARGET_ARCH=amd64
+	;;
+aarch64*|arm64*)
+	TARGET_ARCH=arm64
+	;;
+*)
+	echo "Unsupported architecture: $(uname -m)"
+	false
+	;;
+esac
+
+LIB_PREFIX=lib
+LIB_EXT=.a
+
 case $(uname -s) in
 Darwin*)
+	export MACOSX_DEPLOYMENT_TARGET=11
 	OS_TYPE=darwin
-	LIB_NAME=libskia.a
-	case $(uname -m) in
-	x86_64*)
-		UNISON_LIB_NAME=libskia_darwin_amd64.a
-		export MACOSX_DEPLOYMENT_TARGET=10.15
-		;;
-	arm*)
-		UNISON_LIB_NAME=libskia_darwin_arm64.a
-		export MACOSX_DEPLOYMENT_TARGET=11
-		;;
-	esac
 	PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=true \
@@ -163,8 +169,6 @@ Darwin*)
 	;;
 Linux*)
 	OS_TYPE=linux
-	LIB_NAME=libskia.a
-	UNISON_LIB_NAME=libskia_linux.a
 	PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=false \
@@ -186,8 +190,8 @@ Linux*)
 	;;
 MINGW*)
 	OS_TYPE=windows
-	LIB_NAME=skia.dll
-	UNISON_LIB_NAME=skia_windows.dll
+	LIB_PREFIX=
+	LIB_EXT=.dll
 	PLATFORM_ARGS=" \
       is_component_build=true \
       skia_enable_fontmgr_win=true \
@@ -219,6 +223,8 @@ MINGW*)
 	;;
 esac
 
+LIB_NAME=${LIB_PREFIX}skia_${OS_TYPE}_${TARGET_ARCH}${LIB_EXT}
+
 # Perform the build
 bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
 ninja -C "${BUILD_DIR}"
@@ -228,7 +234,7 @@ mkdir -p "${DIST}/include"
 /bin/rm -f ${DIST}/include/*.h
 cp include/sk_capi.h "${DIST}/include/"
 mkdir -p "${DIST}/lib/${OS_TYPE}"
-cp "${BUILD_DIR}/${LIB_NAME}" "${DIST}/lib/${OS_TYPE}/"
+cp "${BUILD_DIR}/${LIB_PREFIX}skia${LIB_EXT}" "${DIST}/lib/${LIB_NAME}"
 
 cd ../..
 
@@ -237,6 +243,6 @@ if [ -d ../unison ]; then
 	RELATIVE_UNISON_DIR=../unison/internal/skia
 	mkdir -p "${RELATIVE_UNISON_DIR}"
 	cp "${DIST}/include/sk_capi.h" "${RELATIVE_UNISON_DIR}/"
-	cp "${DIST}/lib/${OS_TYPE}/${LIB_NAME}" "${RELATIVE_UNISON_DIR}/${UNISON_LIB_NAME}"
-	echo "Copied distribution to unison"
+	cp "${DIST}/lib/${LIB_NAME}" "${RELATIVE_UNISON_DIR}/${LIB_NAME}"
+	echo "Copied distribution to unison: ${LIB_NAME}"
 fi
