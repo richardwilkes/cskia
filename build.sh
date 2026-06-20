@@ -86,7 +86,26 @@ sed -e 's@^class SkData;$@#include "include/core/SkData.h"@' src/pdf/SkPDFSubset
 
 # As changes to Skia are made, these args may need to be adjusted.
 # Use 'bin/gn args $BUILD_DIR --list' to see what args are available.
+# The target architecture defaults to the host architecture, but may be overridden via the TARGET_ARCH environment
+# variable to cross-compile (e.g. building Windows arm64 on an x86_64 host). GN_TARGET_CPU is the corresponding value
+# Skia's GN build expects.
+case "${TARGET_ARCH:-$(uname -m)}" in
+x86_64*|amd64*)
+	TARGET_ARCH=amd64
+	GN_TARGET_CPU=x64
+	;;
+aarch64*|arm64*)
+	TARGET_ARCH=arm64
+	GN_TARGET_CPU=arm64
+	;;
+*)
+	echo "Unsupported architecture: ${TARGET_ARCH:-$(uname -m)}"
+	false
+	;;
+esac
+
 COMMON_ARGS=" \
+  target_cpu=\"${GN_TARGET_CPU}\" \
   is_debug=false \
   is_official_build=true \
   skia_enable_discrete_gpu=true \
@@ -126,19 +145,6 @@ COMMON_ARGS=" \
   skia_use_xps=false \
   skia_use_zlib=true \
 "
-
-case $(uname -m) in
-x86_64*)
-	TARGET_ARCH=amd64
-	;;
-aarch64*|arm64*)
-	TARGET_ARCH=arm64
-	;;
-*)
-	echo "Unsupported architecture: $(uname -m)"
-	false
-	;;
-esac
 
 LIB_PREFIX=lib
 LIB_EXT=.a
