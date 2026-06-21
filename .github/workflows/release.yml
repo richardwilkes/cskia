@@ -80,6 +80,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v7
       - name: Download artifacts
         uses: actions/download-artifact@v7
         with:
@@ -97,5 +98,5 @@ jobs:
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
             --title "$TAG" \
-            --generate-notes \
+            --notes-file RELEASE_NOTES.md \
             release/*
