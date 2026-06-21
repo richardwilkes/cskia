@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to create the release for (e.g. v1.2.3)
+        required: true
+
+jobs:
+  build:
+    name: build-${{ matrix.artifact }}
+    runs-on: ${{ matrix.runs-on }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-22.04
+            artifact: libskia_linux_amd64
+            ext: a
+            install: |
+              sudo apt-get update
+              sudo apt-get install -y python3 ninja-build libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxi-dev gcc g++ clang
+          - runs-on: ubuntu-22.04-arm
+            artifact: libskia_linux_arm64
+            ext: a
+            install: |
+              sudo apt-get update
+              sudo apt-get install -y python3 ninja-build libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxi-dev gcc g++ clang
+          - runs-on: macos-26-intel
+            artifact: libskia_darwin_amd64
+            ext: a
+            install: brew install ninja python3
+          - runs-on: macos-26
+            artifact: libskia_darwin_arm64
+            ext: a
+            install: brew install ninja python3
+          - runs-on: windows-2022
+            artifact: skia_windows_amd64
+            ext: dll
+            install: ""
+          # Native Windows arm64 runners can't build Skia because the build tools aren't available for arm64, so we
+          # cross-compile from the x86_64 Windows runner instead.
+          - runs-on: windows-2022
+            artifact: skia_windows_arm64
+            ext: dll
+            install: ""
+            target-arch: arm64
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        if: matrix.install != ''
+        run: ${{ matrix.install }}
+      - name: Build
+        run: bash build.sh
+        env:
+          TARGET_ARCH: ${{ matrix.target-arch }}
+      - name: Upload library artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/lib/${{ matrix.artifact }}.${{ matrix.ext }}
+      # The header is identical for every platform; publish it once.
+      - name: Upload header artifact
+        if: matrix.artifact == 'libskia_linux_amd64'
+        uses: actions/upload-artifact@v7
+        with:
+          name: sk_capi.h
+          path: dist/include/sk_capi.h
+
+  release:
+    name: release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: artifacts
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          # download-artifact places each artifact in its own subdirectory; flatten to a
+          # single list of files to attach to the release.
+          mkdir -p release
+          find artifacts -type f -exec cp {} release/ \;
+          ls -l release
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --generate-notes \
+            release/*

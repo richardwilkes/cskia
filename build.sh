@@ -239,7 +239,7 @@ ninja -C "${BUILD_DIR}"
 mkdir -p "${DIST}/include"
 /bin/rm -f ${DIST}/include/*.h
 cp include/sk_capi.h "${DIST}/include/"
-mkdir -p "${DIST}/lib/${OS_TYPE}"
+mkdir -p "${DIST}/lib"
 cp "${BUILD_DIR}/${LIB_PREFIX}skia${LIB_EXT}" "${DIST}/lib/${LIB_NAME}"
 
 cd ../..
