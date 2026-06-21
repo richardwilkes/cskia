@@ -1,0 +1,63 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    name: build-${{ matrix.artifact }}
+    runs-on: ${{ matrix.runs-on }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-22.04
+            artifact: libskia_linux_amd64
+            ext: a
+            install: |
+              sudo apt-get update
+              sudo apt-get install -y python3 ninja-build libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxi-dev gcc g++ clang
+          - runs-on: ubuntu-22.04-arm
+            artifact: libskia_linux_arm64
+            ext: a
+            install: |
+              sudo apt-get update
+              sudo apt-get install -y python3 ninja-build libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxrandr-dev libxi-dev gcc g++ clang
+          - runs-on: macos-26-intel
+            artifact: libskia_darwin_amd64
+            ext: a
+            install: brew install ninja python3
+          - runs-on: macos-26
+            artifact: libskia_darwin_arm64
+            ext: a
+            install: brew install ninja python3
+          - runs-on: windows-2022
+            artifact: skia_windows_amd64
+            ext: dll
+            install: ""
+          # Native Windows arm64 runners can't build Skia because the build tools aren't available for arm64, so we
+          # cross-compile from the x86_64 Windows runner instead.
+          - runs-on: windows-2022
+            artifact: skia_windows_arm64
+            ext: dll
+            install: ""
+            target-arch: arm64
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        if: matrix.install != ''
+        run: ${{ matrix.install }}
+      - name: Build
+        run: bash build.sh
+        env:
+          TARGET_ARCH: ${{ matrix.target-arch }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/lib/${{ matrix.artifact }}.${{ matrix.ext }}

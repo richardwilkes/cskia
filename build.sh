@@ -2,9 +2,15 @@
 set -eo pipefail
 
 # These two variables should be set in tandem to keep a consistent set of sources.
-# Last set Mon Apr 21 12:56:08 PDT 2025
-DEPOT_TOOLS_COMMIT=5d891d2a8dd455a73ce6b9a835a6f575a549825b
-SKIA_BRANCH=chrome/m136
+# Last set Wed Jun 10 17:25:00 PDT 2026
+DEPOT_TOOLS_COMMIT=488d7480e234ccbca59a49eadf9d23cd7aa02c31
+SKIA_BRANCH=chrome/m142
+
+ROOT_DIR=$(pwd -P)
+BUILD_DIR=${ROOT_DIR}/skia/build
+DIST=${ROOT_DIR}/dist
+
+export PATH="${ROOT_DIR}/skia/depot_tools:${PATH}"
 
 for arg in "$@"; do
 	case "$arg" in
@@ -27,12 +33,12 @@ for arg in "$@"; do
 done
 
 if [ "$CLEAN"x == "fullx" ]; then
-	/bin/rm -rf dist skia
+	/bin/rm -rf ${DIST} skia
 	exit 0
 fi
 
 if [ "$CLEAN"x == "restorex" ]; then
-	/bin/rm -rf dist skia/build
+	/bin/rm -rf ${DIST} ${BUILD_DIR}
 	if [ -d skia/skia ]; then
 		cd skia/skia
 		git checkout -- .
@@ -42,7 +48,6 @@ if [ "$CLEAN"x == "restorex" ]; then
 fi
 
 if [ "$SHOW_ARGS"x == "1x" ]; then
-	export PATH="${PWD}/skia/depot_tools:${PATH}"
 	cd skia/skia
 	bin/gn args ../build --list --short
 	exit 0
@@ -53,9 +58,8 @@ mkdir -p skia
 cd skia
 
 if [ ! -e depot_tools ]; then
-	git clone --depth 1 --single-branch https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	git clone --revision ${DEPOT_TOOLS_COMMIT} --depth 1 --single-branch https://chromium.googlesource.com/chromium/tools/depot_tools.git
 fi
-export PATH="${PWD}/depot_tools:${PATH}"
 
 if [ ! -e skia ]; then
 	git clone -b "${SKIA_BRANCH}" --depth 1 --single-branch https://github.com/google/skia.git
@@ -82,15 +86,33 @@ sed -e 's@^class SkData;$@#include "include/core/SkData.h"@' src/pdf/SkPDFSubset
 
 # As changes to Skia are made, these args may need to be adjusted.
 # Use 'bin/gn args $BUILD_DIR --list' to see what args are available.
+# The target architecture defaults to the host architecture, but may be overridden via the TARGET_ARCH environment
+# variable to cross-compile (e.g. building Windows arm64 on an x86_64 host). GN_TARGET_CPU is the corresponding value
+# Skia's GN build expects.
+case "${TARGET_ARCH:-$(uname -m)}" in
+x86_64*|amd64*)
+	TARGET_ARCH=amd64
+	GN_TARGET_CPU=x64
+	;;
+aarch64*|arm64*)
+	TARGET_ARCH=arm64
+	GN_TARGET_CPU=arm64
+	;;
+*)
+	echo "Unsupported architecture: ${TARGET_ARCH:-$(uname -m)}"
+	false
+	;;
+esac
+
 COMMON_ARGS=" \
+  target_cpu=\"${GN_TARGET_CPU}\" \
   is_debug=false \
   is_official_build=true \
   skia_enable_discrete_gpu=true \
   skia_enable_fontmgr_android=false \
+  skia_enable_fontmgr_android_ndk=false \
   skia_enable_fontmgr_empty=false \
-  skia_enable_fontmgr_fuchsia=false \
   skia_enable_fontmgr_win_gdi=false \
-  skia_enable_gpu=true \
   skia_enable_pdf=true \
   skia_enable_skottie=false \
   skia_enable_skshaper=true \
@@ -102,18 +124,18 @@ COMMON_ARGS=" \
   skia_use_dawn=false \
   skia_use_dng_sdk=false \
   skia_use_egl=false \
-  skia_use_expat=false \
+  skia_use_expat=true \
   skia_use_ffmpeg=false \
   skia_use_fixed_gamma_text=false \
   skia_use_fontconfig=false \
   skia_use_gl=true \
   skia_use_harfbuzz=false \
   skia_use_icu=false \
-  skia_use_libheif=false \
   skia_use_libjxl_decode=false \
   skia_use_lua=false \
   skia_use_metal=false \
   skia_use_piex=false \
+  skia_use_system_expat=false \
   skia_use_system_libjpeg_turbo=false \
   skia_use_system_libpng=false \
   skia_use_system_libwebp=false \
@@ -124,23 +146,13 @@ COMMON_ARGS=" \
   skia_use_zlib=true \
 "
 
-BUILD_DIR=${PWD}/skia/build
-DIST=${PWD}/dist
+LIB_PREFIX=lib
+LIB_EXT=.a
 
 case $(uname -s) in
 Darwin*)
+	export MACOSX_DEPLOYMENT_TARGET=11
 	OS_TYPE=darwin
-	LIB_NAME=libskia.a
-	case $(uname -m) in
-	x86_64*)
-		UNISON_LIB_NAME=libskia_darwin_amd64.a
-		export MACOSX_DEPLOYMENT_TARGET=10.15
-		;;
-	arm*)
-		UNISON_LIB_NAME=libskia_darwin_arm64.a
-		export MACOSX_DEPLOYMENT_TARGET=11
-		;;
-	esac
 	PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=true \
@@ -149,6 +161,7 @@ Darwin*)
       skia_use_freetype=false \
       skia_use_x11=false \
       extra_cflags=[ \
+        \"-DSK_SUPPORT_UNSPANNED_APIS\", \
         \"-Wno-unused-command-line-argument\" \
       ] \
       extra_cflags_cc=[ \
@@ -162,8 +175,6 @@ Darwin*)
 	;;
 Linux*)
 	OS_TYPE=linux
-	LIB_NAME=libskia.a
-	UNISON_LIB_NAME=libskia_linux.a
 	PLATFORM_ARGS=" \
       skia_enable_fontmgr_win=false \
       skia_use_fonthost_mac=false \
@@ -172,6 +183,7 @@ Linux*)
       skia_use_freetype=true \
       skia_use_x11=true \
       extra_cflags=[ \
+        \"-DSK_SUPPORT_UNSPANNED_APIS\", \
         \"-Wno-psabi\" \
       ] \
       extra_cflags_cc=[ \
@@ -184,8 +196,8 @@ Linux*)
 	;;
 MINGW*)
 	OS_TYPE=windows
-	LIB_NAME=skia.dll
-	UNISON_LIB_NAME=skia_windows.dll
+	LIB_PREFIX=
+	LIB_EXT=.dll
 	PLATFORM_ARGS=" \
       is_component_build=true \
       skia_enable_fontmgr_win=true \
@@ -196,6 +208,7 @@ MINGW*)
       skia_use_x11=false \
       clang_win=\"C:\\Program Files\\LLVM\" \
       extra_cflags=[ \
+        \"-DSK_SUPPORT_UNSPANNED_APIS\", \
         \"-DSKIA_C_DLL\", \
         \"-UHAVE_NEWLOCALE\", \
         \"-UHAVE_XLOCALE_H\", \
@@ -216,6 +229,8 @@ MINGW*)
 	;;
 esac
 
+LIB_NAME=${LIB_PREFIX}skia_${OS_TYPE}_${TARGET_ARCH}${LIB_EXT}
+
 # Perform the build
 bin/gn gen "${BUILD_DIR}" --args="${COMMON_ARGS} ${PLATFORM_ARGS}"
 ninja -C "${BUILD_DIR}"
@@ -225,7 +240,7 @@ mkdir -p "${DIST}/include"
 /bin/rm -f ${DIST}/include/*.h
 cp include/sk_capi.h "${DIST}/include/"
 mkdir -p "${DIST}/lib/${OS_TYPE}"
-cp "${BUILD_DIR}/${LIB_NAME}" "${DIST}/lib/${OS_TYPE}/"
+cp "${BUILD_DIR}/${LIB_PREFIX}skia${LIB_EXT}" "${DIST}/lib/${LIB_NAME}"
 
 cd ../..
 
@@ -234,6 +249,6 @@ if [ -d ../unison ]; then
 	RELATIVE_UNISON_DIR=../unison/internal/skia
 	mkdir -p "${RELATIVE_UNISON_DIR}"
 	cp "${DIST}/include/sk_capi.h" "${RELATIVE_UNISON_DIR}/"
-	cp "${DIST}/lib/${OS_TYPE}/${LIB_NAME}" "${RELATIVE_UNISON_DIR}/${UNISON_LIB_NAME}"
-	echo "Copied distribution to unison"
+	cp "${DIST}/lib/${LIB_NAME}" "${RELATIVE_UNISON_DIR}/${LIB_NAME}"
+	echo "Copied distribution to unison: ${LIB_NAME}"
 fi
