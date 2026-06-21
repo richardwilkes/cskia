@@ -4,6 +4,8 @@ A flat C API (`sk_capi.h` / `sk_capi.cpp`) over [Skia](https://skia.org), built 
 embedding in non-C++ projects via a stable C ABI. Note that these have been tailored to the needs of my specific
 projects and may not be suitable for anyone else.
 
+[![Build](https://github.com/richardwilkes/cskia/actions/workflows/build.yml/badge.svg)](https://github.com/richardwilkes/cskia/actions/workflows/build.yml)
+
 ## Source baseline
 
 | Component | Pin |
